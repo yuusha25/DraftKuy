@@ -10,7 +10,9 @@ ALLY_X_RATIO = 0.0642      # Posisi horizontal ally
 ENEMY_X_RATIO = 0.8746     # Posisi horizontal enemy
 START_Y_RATIO = 0.115       # Posisi vertikal hero pertama
 SPACING_RATIO = 0.162       # Jarak vertikal antar hero
-FINAL_SIZE = 142           # UKURAN FINAL YANG DIINGINKAN (142x142)
+FINAL_SIZE_x = 141           # UKURAN FINAL YANG DIINGINKAN (141x133)
+FINAL_SIZE_y = 133           # UKURAN FINAL YANG DIINGINKAN (141x133)
+
 # ============================================================================
 
 def crop_hero_images(image_path, output_folder="cropped_heroes"):
@@ -29,8 +31,8 @@ def crop_hero_images(image_path, output_folder="cropped_heroes"):
     # 2. Buat folder output jika belum ada
     os.makedirs(output_folder, exist_ok=True)
     print(f"📂 Output akan disimpan di: {os.path.abspath(output_folder)}")
-    print(f"🔍 Ukuran final: {FINAL_SIZE}x{FINAL_SIZE} pixel")
-    
+    print(f"🔍 Ukuran final: {FINAL_SIZE_x}x{FINAL_SIZE_y} pixel")
+
     try:
         # 3. Baca file gambar
         image_data = tf.io.read_file(image_path)
@@ -72,7 +74,7 @@ def crop_hero_images(image_path, output_folder="cropped_heroes"):
 
     print(f"⚙️ Parameter crop:")
     print(f"  - Ukuran crop awal: {CROP_WIDTH}x{CROP_HEIGHT}px")
-    print(f"  - Ukuran final: {FINAL_SIZE}x{FINAL_SIZE}px")
+    print(f"  - Ukuran final: {FINAL_SIZE_x}x{FINAL_SIZE_y}px")
     print(f"  - Spacing: {spacing}px")
     print(f"  - Posisi ally: X={ally_x}, Y-start={ally_y_start}")
     print(f"  - Posisi enemy: X={enemy_x}, Y-start={enemy_y_start}")
@@ -86,8 +88,8 @@ def crop_hero_images(image_path, output_folder="cropped_heroes"):
             # Resize ke 142x142 DENGAN PADDING (PENTING!)
             resized = tf.image.resize_with_pad(
                 cropped,
-                FINAL_SIZE,  # height
-                FINAL_SIZE   # width
+                FINAL_SIZE_y,  # height
+                FINAL_SIZE_x   # width
             )
             
             # Konversi dan simpan
@@ -98,9 +100,9 @@ def crop_hero_images(image_path, output_folder="cropped_heroes"):
             # Verifikasi ukuran
             img_verif = tf.io.decode_png(tf.io.read_file(output_path))
             h, w, _ = img_verif.shape
-            if w != FINAL_SIZE or h != FINAL_SIZE:
-                raise ValueError(f"Ukuran salah: {w}x{h}px (harusnya {FINAL_SIZE}x{FINAL_SIZE})")
-                
+            if w != FINAL_SIZE_x or h != FINAL_SIZE_y:
+                raise ValueError(f"Ukuran salah: {w}x{h}px (harusnya {FINAL_SIZE_x}x{FINAL_SIZE_y})")
+
             print(f"✅ Berhasil disimpan: {filename} ({w}x{h}px)")
             return True
         except Exception as e:
@@ -139,7 +141,7 @@ def crop_hero_images(image_path, output_folder="cropped_heroes"):
     print("=====================================================")
 
 if __name__ == "__main__":
-    input_file = "screenshots3.jpg"#Default
+    input_file = "haha.png"#Default
     
     if len(sys.argv) > 1:
         input_file = sys.argv[1]
