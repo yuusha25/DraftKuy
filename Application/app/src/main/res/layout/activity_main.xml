@@ -101,7 +101,7 @@
                     android:fillViewport="true">
 
                     <LinearLayout
-                        android:id="@+id/junglerHeroesContainer"
+                        android:id="@+id/roamHeroesContainer"
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
                         android:orientation="vertical" />
@@ -131,7 +131,7 @@
                     android:fillViewport="true">
 
                     <LinearLayout
-                        android:id="@+id/roamHeroesContainer"
+                        android:id="@+id/junglerHeroesContainer"
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
                         android:orientation="vertical" />
