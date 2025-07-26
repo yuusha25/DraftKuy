@@ -12,6 +12,8 @@ import androidx.appcompat.app.AppCompatActivity
 import com.example.draftkuy.R
 import com.example.draftkuy.models.Hero
 import com.example.draftkuy.utils.DataHelper
+import com.example.draftkuy.utils.JsonMeta
+
 
 class MainActivity : AppCompatActivity() {
 
@@ -31,7 +33,7 @@ class MainActivity : AppCompatActivity() {
     }
 
     private fun initializeViews() {
-        heroTable = findViewById(R.id.heroTable)
+//        heroTable = findViewById(R.id.heroTable)
         btnSearch = findViewById(R.id.btnSearch)
         progressBar = findViewById(R.id.progressBar)
     }
@@ -164,42 +166,58 @@ class MainActivity : AppCompatActivity() {
     }
 
     private fun displayHeroRecommendations(hero: Hero) {
-        // Clear existing rows except header
-        while (heroTable.childCount > 1) {
-            heroTable.removeViewAt(1)
+        // Ambil container dari layout
+        val roamContainer = findViewById<LinearLayout>(R.id.roamHeroesContainer)
+        val junglerContainer = findViewById<LinearLayout>(R.id.junglerHeroesContainer)
+        val midContainer = findViewById<LinearLayout>(R.id.midHeroesContainer)
+        val goldContainer = findViewById<LinearLayout>(R.id.goldHeroesContainer)
+        val expContainer = findViewById<LinearLayout>(R.id.explaneHeroesContainer)
+        val metaContainer = findViewById<LinearLayout>(R.id.metaHeroesContainer)
+
+        // Clear isi sebelumnya
+        roamContainer.removeAllViews()
+        junglerContainer.removeAllViews()
+        midContainer.removeAllViews()
+        goldContainer.removeAllViews()
+        expContainer.removeAllViews()
+        metaContainer.removeAllViews()
+
+        val metaList = JsonMeta.loadMetaFromJson(this)
+
+        Log.d("MainActivity", "Displaying recommendations for: ${hero.name}")
+
+        fun addHeroTextView(container: LinearLayout, heroName: String?, color: Int = Color.WHITE) {
+            val textView = TextView(this).apply {
+                text = heroName ?: ""
+                setTextColor(color)
+                gravity = Gravity.CENTER
+                setPadding(8, 16, 8, 16)
+            }
+            container.addView(textView)
         }
 
-        // Log the received data for debugging
-        Log.d("MainActivity", "Displaying recommendations for: ${hero.name}")
-        Log.d("MainActivity", "Roam: ${hero.recommendation.roam}")
-        Log.d("MainActivity", "Jungler: ${hero.recommendation.jungler}")
-        Log.d("MainActivity", "Midlane: ${hero.recommendation.midlane}")
-        Log.d("MainActivity", "Goldlane: ${hero.recommendation.goldlane}")
-        Log.d("MainActivity", "Xplane: ${hero.recommendation.xplane}")
+        val maxRows = listOf(
+            hero.recommendation.roam.size,
+            hero.recommendation.jungler.size,
+            hero.recommendation.midlane.size,
+            hero.recommendation.goldlane.size,
+            hero.recommendation.xplane.size,
+            metaList.size
+        ).maxOrNull() ?: 0
 
-        // Add recommendations for each role
-        for (i in 0 until 5) {
-            TableRow(this).apply {
-                // Create list of hero names for this row
-                val heroes = listOf(
-                    hero.recommendation.roam.getOrNull(i) ?: "-",
-                    hero.recommendation.jungler.getOrNull(i) ?: "-",
-                    hero.recommendation.midlane.getOrNull(i) ?: "-",
-                    hero.recommendation.goldlane.getOrNull(i) ?: "-",
-                    hero.recommendation.xplane.getOrNull(i) ?: "-"
-                )
-
-                // Create TextViews for each hero name
-                heroes.forEach { heroName ->
-                    addView(TextView(context).apply {
-                        text = heroName
-                        setTextColor(Color.WHITE)
-                        gravity = Gravity.CENTER
-                        setPadding(8, 16, 8, 16)
-                    })
-                }
-                heroTable.addView(this)
-            }
+        for(i in 0 until 7){
+            addHeroTextView(roamContainer, hero.recommendation.roam.getOrNull(i))
+            addHeroTextView(junglerContainer, hero.recommendation.jungler.getOrNull(i))
+            addHeroTextView(midContainer, hero.recommendation.midlane.getOrNull(i))
+            addHeroTextView(goldContainer, hero.recommendation.goldlane.getOrNull(i))
+            addHeroTextView(expContainer, hero.recommendation.xplane.getOrNull(i))
+        }
+        for (i in 0 until maxRows) {
+            addHeroTextView(metaContainer, metaList.getOrNull(i), Color.YELLOW)
         }
     }
+
+
+
+
 }

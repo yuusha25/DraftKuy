@@ -66,70 +66,204 @@
 
     <!-- Hero Roles Table -->
     <HorizontalScrollView
-        android:layout_width="wrap_content"
-        android:layout_margin="40dp"
+        android:layout_width="match_parent"
         android:layout_height="wrap_content"
+        android:layout_margin="20dp"
         android:layout_below="@id/header"
+        android:scrollbars="horizontal"
         android:fillViewport="true">
 
-        <TableLayout
-            android:id="@+id/heroTable"
-            android:layout_width="wrap_content"
-            android:layout_height="250dp"
-            android:background="@color/table_background"
-            android:stretchColumns="*">
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:orientation="horizontal">
 
-            <!-- Header Row -->
-            <TableRow
-                android:id="@+id/header_row"
-                android:layout_height="48dp"
-                android:gravity="center">
+            <!-- Contoh Kolom: ROAM -->
+            <LinearLayout
+                android:layout_width="0dp"
+                android:layout_weight="1"
+                android:layout_height="wrap_content"
+                android:orientation="vertical"
+                android:padding="8dp"
+                android:background="#222222">
 
                 <TextView
-                    android:layout_width="0dp"
-                    android:layout_weight="1"
-                    android:text="@string/role_roam"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:text="ROAM"
                     android:textColor="@color/role_roam"
                     android:textStyle="bold"
                     android:gravity="center"/>
 
+                <ScrollView
+                    android:layout_width="match_parent"
+                    android:layout_height="200dp"
+                    android:fillViewport="true">
+
+                    <LinearLayout
+                        android:id="@+id/junglerHeroesContainer"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:orientation="vertical" />
+                </ScrollView>
+            </LinearLayout>
+
+            <!-- Contoh Kolom: Jungler -->
+            <LinearLayout
+                android:layout_width="0dp"
+                android:layout_weight="1"
+                android:layout_height="wrap_content"
+                android:orientation="vertical"
+                android:padding="8dp"
+                android:background="#222222">
+
                 <TextView
-                    android:layout_width="0dp"
-                    android:layout_weight="1"
-                    android:text="@string/role_jungler"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:text="JUNGLER"
                     android:textColor="@color/role_jungler"
                     android:textStyle="bold"
                     android:gravity="center"/>
 
+                <ScrollView
+                    android:layout_width="match_parent"
+                    android:layout_height="200dp"
+                    android:fillViewport="true">
+
+                    <LinearLayout
+                        android:id="@+id/roamHeroesContainer"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:orientation="vertical" />
+                </ScrollView>
+            </LinearLayout>
+
+            <!-- Contoh Kolom: MID LANE -->
+            <LinearLayout
+                android:layout_width="0dp"
+                android:layout_weight="1"
+                android:layout_height="wrap_content"
+                android:orientation="vertical"
+                android:padding="8dp"
+                android:background="#222222">
+
                 <TextView
-                    android:layout_width="0dp"
-                    android:layout_weight="1"
-                    android:text="@string/role_midlane"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:text="MID LANE"
                     android:textColor="@color/role_midlane"
                     android:textStyle="bold"
                     android:gravity="center"/>
 
+                <ScrollView
+                    android:layout_width="match_parent"
+                    android:layout_height="200dp"
+                    android:fillViewport="true">
+
+                    <LinearLayout
+                        android:id="@+id/midHeroesContainer"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:orientation="vertical" />
+                </ScrollView>
+            </LinearLayout>
+            <!-- Contoh Kolom: GOLD LANE -->
+            <LinearLayout
+                android:layout_width="0dp"
+                android:layout_weight="1"
+                android:layout_height="wrap_content"
+                android:orientation="vertical"
+                android:padding="8dp"
+                android:background="#222222">
+
                 <TextView
-                    android:layout_width="0dp"
-                    android:layout_weight="1"
-                    android:text="@string/role_goldlane"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:text="GOLD LANE"
                     android:textColor="@color/role_goldlane"
                     android:textStyle="bold"
                     android:gravity="center"/>
 
+                <ScrollView
+                    android:layout_width="match_parent"
+                    android:layout_height="200dp"
+                    android:fillViewport="true">
+
+                    <LinearLayout
+                        android:id="@+id/goldHeroesContainer"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:orientation="vertical" />
+                </ScrollView>
+            </LinearLayout>
+
+            <!-- Contoh Kolom: EXP LANE -->
+            <LinearLayout
+                android:layout_width="0dp"
+                android:layout_weight="1"
+                android:layout_height="wrap_content"
+                android:orientation="vertical"
+                android:padding="8dp"
+                android:background="#222222">
+
                 <TextView
-                    android:layout_width="0dp"
-                    android:layout_weight="1"
-                    android:text="@string/role_xplane"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:text="EXP LANE"
                     android:textColor="@color/role_xplane"
                     android:textStyle="bold"
                     android:gravity="center"/>
-            </TableRow>
 
-            <!-- Hero rows will be populated programmatically -->
-            <!-- Tidak perlu placeholder rows karena akan ditambahkan secara dinamis -->
-        </TableLayout>
+                <ScrollView
+                    android:layout_width="match_parent"
+                    android:layout_height="200dp"
+                    android:fillViewport="true">
+
+                    <LinearLayout
+                        android:id="@+id/explaneHeroesContainer"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:orientation="vertical" />
+                </ScrollView>
+            </LinearLayout>
+
+
+
+            <!-- Ulangi untuk kolom lain (XPLANE, GOLDLANE, dsb) -->
+
+            <!-- Contoh Kolom META -->
+            <LinearLayout
+                android:layout_width="0dp"
+                android:layout_weight="1"
+                android:layout_height="wrap_content"
+                android:orientation="vertical"
+                android:padding="8dp"
+                android:background="#333333">
+
+                <TextView
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:text="META"
+                    android:textColor="@color/white"
+                    android:textStyle="bold"
+                    android:gravity="center"/>
+
+                <ScrollView
+                    android:layout_width="match_parent"
+                    android:layout_height="200dp"
+                    android:fillViewport="true">
+
+                    <LinearLayout
+                        android:id="@+id/metaHeroesContainer"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:orientation="vertical" />
+                </ScrollView>
+            </LinearLayout>
+
+        </LinearLayout>
     </HorizontalScrollView>
+
     <ProgressBar
         android:id="@+id/progressBar"
         android:layout_width="wrap_content"
