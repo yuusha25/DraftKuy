@@ -24,7 +24,7 @@ class MainActivity : AppCompatActivity() {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_main)
         requestedOrientation = ActivityInfo.SCREEN_ORIENTATION_LANDSCAPE
-
+        supportActionBar?.hide()
         initializeViews()
         initializeData()
         setupButtonListeners()
@@ -33,7 +33,6 @@ class MainActivity : AppCompatActivity() {
     private fun initializeViews() {
         heroTable = findViewById(R.id.heroTable)
         btnSearch = findViewById(R.id.btnSearch)
-        btnMeta = findViewById(R.id.btnMeta)
         progressBar = findViewById(R.id.progressBar)
     }
 
@@ -66,7 +65,6 @@ class MainActivity : AppCompatActivity() {
 
     private fun setupButtonListeners() {
         btnSearch.setOnClickListener { showSearchDialog() }
-        btnMeta.setOnClickListener { showMetaHeroes() }
     }
 
     private fun showLoading(show: Boolean) {
@@ -203,9 +201,5 @@ class MainActivity : AppCompatActivity() {
                 heroTable.addView(this)
             }
         }
-    }
-
-    private fun showMetaHeroes() {
-        Toast.makeText(this, "Meta feature coming soon", Toast.LENGTH_SHORT).show()
     }
 }
