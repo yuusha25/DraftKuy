@@ -1,3 +1,17 @@
+<?xml version="1.0" encoding="utf-8"?>
 <resources>
-    <string name="app_name">DraftKuy</string>
+    <string name="app_name">DRAFTKUY</string>
+    <string name="back_button_desc">Back button</string>
+    <string name="coin_icon_desc">Coin icon</string>
+    <string name="default_coin_amount">100000</string>
+    <string name="add_coins_desc">Add coins</string>
+
+    <string name="role_roam">ROAM</string>
+    <string name="role_jungler">JUNGLER</string>
+    <string name="role_midlane">MID LANE</string>
+    <string name="role_goldlane">GOLD LANE</string>
+    <string name="role_xplane">XP LANE</string>
+
+    <string name="btn_search">SEARCH</string>
+    <string name="btn_meta">META</string>
 </resources>

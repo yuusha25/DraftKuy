@@ -2,173 +2,176 @@
 <RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:background="#333333">
+    android:background="@color/background_dark">
 
-    <!-- Top Bar -->
-    <LinearLayout
-        android:id="@+id/topBar"
+    <!-- Header -->
+    <RelativeLayout
+        android:id="@+id/header"
         android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:orientation="horizontal"
-        android:gravity="center_vertical"
-        android:padding="8dp"
-        android:background="#222222">
+        android:layout_height="48dp"
+        android:background="@color/header_background"
+        android:paddingHorizontal="8dp">
 
+        <!-- Back Button -->
         <Button
-            android:id="@+id/buttonBack"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:text="Back"/>
+            android:id="@+id/btnBack"
+            android:layout_width="40dp"
+            android:layout_height="40dp"
+            android:layout_alignParentStart="true"
+            android:layout_centerVertical="true"
+            android:background="?attr/selectableItemBackgroundBorderless"
+            android:text="←"
+            android:textSize="20sp"
+            android:textColor="@color/white"/>
 
         <TextView
-            android:id="@+id/textDraftkuy"
-            android:layout_width="0dp"
-            android:layout_height="wrap_content"
-            android:layout_weight="1"
-            android:text="DRAFTKUY"
-            android:textColor="#FFD700"
-            android:textStyle="bold"
-            android:textSize="20sp"
-            android:gravity="center"/>
-
-        <LinearLayout
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:orientation="horizontal"
-            android:gravity="center_vertical">
+            android:layout_centerInParent="true"
+            android:layout_toStartOf="@+id/coinContainer"
+            android:layout_toEndOf="@id/btnBack"
+            android:ellipsize="end"
+            android:maxLines="1"
+            android:text="@string/app_name"
+            android:textColor="@color/white"
+            android:textSize="20sp"
+            android:textStyle="bold"/>
 
-            <ImageView
-                android:id="@+id/iconKey"
+        <RelativeLayout
+            android:id="@+id/coinContainer"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_alignParentEnd="true"
+            android:layout_centerVertical="true"
+            android:layout_marginEnd="8dp">
+
+            <!-- Coin Icon -->
+            <TextView
+                android:id="@+id/ivCoin"
                 android:layout_width="24dp"
                 android:layout_height="24dp"
-                android:src="@android:drawable/ic_lock_lock"/>
+                android:text="🪙"
+                android:textSize="16sp"
+                android:gravity="center"
+                android:textColor="@color/gold"/>
 
             <TextView
-                android:id="@+id/textXXXXX"
+                android:id="@+id/tvCoins"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:text="XXXXX"
-                android:textColor="#FFFFFF"
-                android:paddingStart="4dp"
-                android:paddingEnd="4dp"/>
+                android:layout_toEndOf="@id/ivCoin"
+                android:text="@string/default_coin_amount"
+                android:textColor="@color/gold"
+                android:layout_marginStart="4dp"/>
 
+            <!-- Add Coins Button -->
             <Button
-                android:id="@+id/buttonAdd"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:text="+"/>
-        </LinearLayout>
-    </LinearLayout>
+                android:id="@+id/btnAdd"
+                android:layout_width="40dp"
+                android:layout_height="40dp"
+                android:layout_toEndOf="@id/tvCoins"
+                android:text="+"
+                android:textSize="20sp"
+                android:textColor="@color/gold"
+                android:background="?attr/selectableItemBackgroundBorderless"/>
+        </RelativeLayout>
+    </RelativeLayout>
 
-    <!-- Toggle Overlay Button -->
-    <Button
-        android:id="@+id/buttonToggleOverlay"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:text="Toggle Overlay"
-        android:layout_below="@id/topBar"
-        android:layout_margin="8dp"
-        android:layout_alignParentStart="true"/>
-
-    <!-- Main Content (Horizontal Layout) -->
-    <LinearLayout
-        android:id="@+id/mainContent"
-        android:layout_below="@id/buttonToggleOverlay"
+    <!-- Hero Roles Table -->
+    <HorizontalScrollView
         android:layout_width="match_parent"
-        android:layout_height="match_parent"
-        android:orientation="horizontal">
+        android:layout_height="wrap_content"
+        android:layout_below="@id/header"
+        android:fillViewport="true">
 
-        <!-- Lane Columns -->
-        <HorizontalScrollView
-            android:layout_width="0dp"
-            android:layout_height="match_parent"
-            android:layout_weight="4"
-            android:padding="8dp">
+        <TableLayout
+            android:id="@+id/heroTable"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:background="@color/table_background"
+            android:stretchColumns="*">
 
-            <LinearLayout
-                android:layout_width="wrap_content"
-                android:layout_height="match_parent"
-                android:orientation="horizontal"
+            <!-- Header Row -->
+            <TableRow
+                android:id="@+id/header_row"
+                android:layout_height="48dp"
                 android:gravity="center">
 
-                <!-- Contoh 1 Lane -->
-                <LinearLayout
-                    android:layout_width="wrap_content"
-                    android:layout_height="match_parent"
-                    android:orientation="vertical"
-                    android:gravity="center"
-                    android:padding="4dp">
-
-                    <TextView
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:text="Lane"
-                        android:textColor="#FFD700"
-                        android:textStyle="bold"/>
-
-                    <FrameLayout
-                        android:layout_width="60dp"
-                        android:layout_height="60dp"
-                        android:background="#CCCCCC"
-                        android:layout_marginTop="8dp">
-                        <TextView
-                            android:layout_width="match_parent"
-                            android:layout_height="match_parent"
-                            android:text="Hero"
-                            android:gravity="center"/>
-                    </FrameLayout>
-
-                    <FrameLayout
-                        android:layout_width="60dp"
-                        android:layout_height="60dp"
-                        android:background="#CCCCCC"
-                        android:layout_marginTop="8dp">
-                        <TextView
-                            android:layout_width="match_parent"
-                            android:layout_height="match_parent"
-                            android:text="Hero"
-                            android:gravity="center"/>
-                    </FrameLayout>
-                </LinearLayout>
-
-                <!-- Duplikasikan Lane jika diperlukan -->
-            </LinearLayout>
-        </HorizontalScrollView>
-
-        <!-- Sidebar -->
-        <LinearLayout
-            android:layout_width="0dp"
-            android:layout_height="match_parent"
-            android:layout_weight="1"
-            android:orientation="vertical"
-            android:gravity="center"
-            android:padding="8dp"
-            android:background="#222222">
-
-            <ImageButton
-                android:id="@+id/buttonScan"
-                android:layout_width="64dp"
-                android:layout_height="64dp"
-                android:src="@android:drawable/ic_menu_camera"/>
-
-            <FrameLayout
-                android:layout_width="60dp"
-                android:layout_height="60dp"
-                android:background="#CCCCCC"
-                android:layout_marginTop="16dp">
                 <TextView
-                    android:layout_width="match_parent"
-                    android:layout_height="match_parent"
-                    android:text="Hero"
+                    android:layout_width="0dp"
+                    android:layout_weight="1"
+                    android:text="@string/role_roam"
+                    android:textColor="@color/role_roam"
+                    android:textStyle="bold"
                     android:gravity="center"/>
-            </FrameLayout>
 
-            <Button
-                android:id="@+id/buttonRec"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:text="Rec."
-                android:layout_marginTop="16dp"/>
-        </LinearLayout>
+                <TextView
+                    android:layout_width="0dp"
+                    android:layout_weight="1"
+                    android:text="@string/role_jungler"
+                    android:textColor="@color/role_jungler"
+                    android:textStyle="bold"
+                    android:gravity="center"/>
+
+                <TextView
+                    android:layout_width="0dp"
+                    android:layout_weight="1"
+                    android:text="@string/role_midlane"
+                    android:textColor="@color/role_midlane"
+                    android:textStyle="bold"
+                    android:gravity="center"/>
+
+                <TextView
+                    android:layout_width="0dp"
+                    android:layout_weight="1"
+                    android:text="@string/role_goldlane"
+                    android:textColor="@color/role_goldlane"
+                    android:textStyle="bold"
+                    android:gravity="center"/>
+
+                <TextView
+                    android:layout_width="0dp"
+                    android:layout_weight="1"
+                    android:text="@string/role_xplane"
+                    android:textColor="@color/role_xplane"
+                    android:textStyle="bold"
+                    android:gravity="center"/>
+            </TableRow>
+
+            <!-- Hero rows will be populated programmatically -->
+            <!-- Tidak perlu placeholder rows karena akan ditambahkan secara dinamis -->
+        </TableLayout>
+    </HorizontalScrollView>
+    <ProgressBar
+        android:id="@+id/progressBar"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_centerInParent="true"
+        android:visibility="gone"/>
+    <!-- Action Buttons -->
+    <LinearLayout
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_alignParentEnd="true"
+        android:layout_alignParentBottom="true"
+        android:layout_margin="16dp"
+        android:orientation="vertical">
+
+        <Button
+            android:id="@+id/btnSearch"
+            android:layout_width="120dp"
+            android:layout_height="48dp"
+            android:text="@string/btn_search"
+            android:backgroundTint="@color/blue"
+            android:textColor="@color/white"
+            android:layout_marginBottom="8dp"/>
+
+        <Button
+            android:id="@+id/btnMeta"
+            android:layout_width="120dp"
+            android:layout_height="48dp"
+            android:text="@string/btn_meta"
+            android:backgroundTint="@color/red"
+            android:textColor="@color/white"/>
     </LinearLayout>
 </RelativeLayout>
