@@ -1,0 +1,24 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:orientation="vertical"
+    android:padding="16dp">
+
+    <AutoCompleteTextView
+        android:id="@+id/etSearch"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:hint="Enter hero name..."
+        android:textColor="@color/white"
+        android:textColorHint="@color/text_secondary"
+        android:backgroundTint="@color/gold"
+        android:inputType="textCapWords"
+        android:completionThreshold="1"
+        android:dropDownHeight="300dp"
+        android:popupBackground="@color/deep_blue"
+        android:dropDownVerticalOffset="4dp"
+        tools:ignore="MissingPrefix"/>
+</LinearLayout>

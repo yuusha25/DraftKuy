@@ -1,223 +1,244 @@
 package com.example.draftkuy.activities
 
-import android.content.pm.ActivityInfo
-import android.graphics.Color
+import android.graphics.Paint
 import android.os.Bundle
 import android.util.Log
-import android.view.Gravity
+import android.content.pm.ActivityInfo
+import android.view.LayoutInflater
 import android.view.View
+import android.view.ViewGroup
 import android.widget.*
 import androidx.appcompat.app.AlertDialog
 import androidx.appcompat.app.AppCompatActivity
+import androidx.core.content.ContextCompat
+import androidx.recyclerview.widget.LinearLayoutManager
+import androidx.recyclerview.widget.RecyclerView
 import com.example.draftkuy.R
 import com.example.draftkuy.models.Hero
 import com.example.draftkuy.utils.DataHelper
 import com.example.draftkuy.utils.JsonMeta
 
-
 class MainActivity : AppCompatActivity() {
 
-    private lateinit var heroTable: TableLayout
-    private lateinit var btnSearch: Button
-    private lateinit var btnMeta: Button
-    private lateinit var progressBar: ProgressBar
+    private lateinit var tvHeroName: TextView
+    private lateinit var rvHeroes: RecyclerView
+    private lateinit var roleBar: ViewGroup
+    private lateinit var tvCoinAmount: TextView
+    private lateinit var ivHero: ImageView // TAMBAHKAN INI
+    private lateinit var allHeroNames: List<String>
+    private var searchDialog: AlertDialog? = null
+    private var currentHero: Hero? = null
+    private var selectedRoleView: TextView? = null
 
     override fun onCreate(savedInstanceState: Bundle?) {
+        requestedOrientation = ActivityInfo.SCREEN_ORIENTATION_PORTRAIT
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_main)
-        requestedOrientation = ActivityInfo.SCREEN_ORIENTATION_LANDSCAPE
+
+        initViews()
+        setupRecyclerView()
+        setupClickListeners()
+        loadAllHeroNames()
         supportActionBar?.hide()
-        initializeViews()
-        initializeData()
-        setupButtonListeners()
     }
 
-    private fun initializeViews() {
-//        heroTable = findViewById(R.id.heroTable)
-        btnSearch = findViewById(R.id.btnSearch)
-        progressBar = findViewById(R.id.progressBar)
+    private fun initViews() {
+        tvHeroName = findViewById(R.id.tvHeroName)
+        rvHeroes = findViewById(R.id.rvHeroes)
+        roleBar = findViewById(R.id.roleBar)
+        tvCoinAmount = findViewById(R.id.tvCoinAmount)
+        ivHero = findViewById(R.id.ivHero) // TAMBAHKAN INI
+
+        tvCoinAmount.text = "1,000"
+
+        findViewById<View>(R.id.btnTopUp).setOnClickListener {
+            Toast.makeText(this, "Add coins clicked", Toast.LENGTH_SHORT).show()
+        }
     }
 
-    private fun initializeData() {
-        showLoading(true)
-        Thread {
-            try {
-                DataHelper.initialize(this@MainActivity)
-                runOnUiThread {
-                    showLoading(false)
-                    Toast.makeText(
-                        this@MainActivity,
-                        "Hero data loaded successfully",
-                        Toast.LENGTH_SHORT
-                    ).show()
-                }
-            } catch (e: Exception) {
-                runOnUiThread {
-                    showLoading(false)
-                    Toast.makeText(
-                        this@MainActivity,
-                        "Failed to load hero data: ${e.message}",
-                        Toast.LENGTH_LONG
-                    ).show()
-                    Log.e("MainActivity", "Data initialization failed", e)
-                }
+    private fun loadAllHeroNames() {
+        if (!DataHelper.isInitialized) {
+            DataHelper.initialize(this)
+        }
+        allHeroNames = DataHelper.allHeroes.map { it.name }
+        Log.d("HeroNames", "Loaded ${allHeroNames.size} hero names")
+    }
+
+    private fun setupRecyclerView() {
+        rvHeroes.layoutManager = LinearLayoutManager(this)
+        rvHeroes.adapter = HeroAdapter(emptyList())
+    }
+
+    private fun setupClickListeners() {
+        for (i in 0 until roleBar.childCount) {
+            val roleView = roleBar.getChildAt(i) as? TextView ?: continue
+            roleView.setOnClickListener {
+                setSelectedRole(roleView)
+                handleRoleClick(roleView.text.toString())
             }
-        }.start()
+        }
+
+        findViewById<View>(R.id.btnSearch).setOnClickListener {
+            showSearchDialog()
+        }
     }
 
-    private fun setupButtonListeners() {
-        btnSearch.setOnClickListener { showSearchDialog() }
+    private fun setSelectedRole(newSelected: TextView) {
+        selectedRoleView?.let {
+            it.paintFlags = it.paintFlags and Paint.UNDERLINE_TEXT_FLAG.inv()
+            it.setTextColor(ContextCompat.getColor(this, R.color.yellow))
+        }
+
+        newSelected.paintFlags = newSelected.paintFlags or Paint.UNDERLINE_TEXT_FLAG
+        newSelected.setTextColor(ContextCompat.getColor(this, R.color.orange))
+
+        selectedRoleView = newSelected
     }
 
-    private fun showLoading(show: Boolean) {
-        progressBar.visibility = if (show) View.VISIBLE else View.GONE
+    private fun handleRoleClick(role: String) {
+        when (role.uppercase()) {
+            "META" -> showMetaHeroes()
+            else -> showHeroesForRole(role.lowercase())
+        }
+    }
+
+    private fun showHeroesForRole(role: String) {
+        currentHero?.let { hero ->
+            val heroes = when (role.uppercase()) {
+                "ROAM" -> hero.recommendation.roam
+                "JUNGLER" -> hero.recommendation.jungler
+                "MIDLANE" -> hero.recommendation.midlane
+                "GOLDLANE" -> hero.recommendation.goldlane
+                "XPLANE" -> hero.recommendation.xplane
+                else -> emptyList()
+            }
+            rvHeroes.adapter = HeroAdapter(heroes)
+        } ?: run {
+            Toast.makeText(this, "Please search for a hero first", Toast.LENGTH_SHORT).show()
+        }
+    }
+
+    private fun showMetaHeroes() {
+        val metaHeroes = JsonMeta.loadMetaFromJson(this)
+        rvHeroes.adapter = HeroAdapter(metaHeroes)
     }
 
     private fun showSearchDialog() {
-        val input = AutoCompleteTextView(this).apply {
-            hint = "Enter hero name (e.g., Akai)"
-            threshold = 1 // Mulai menampilkan saran setelah 1 karakter diketik
+        val dialogView = LayoutInflater.from(this).inflate(R.layout.dialog_search, null)
+        val input = dialogView.findViewById<AutoCompleteTextView>(R.id.etSearch).apply {
+            setTextColor(ContextCompat.getColor(this@MainActivity, android.R.color.white))
+            setHintTextColor(ContextCompat.getColor(this@MainActivity, R.color.text_secondary))
+            threshold = 1
+            setDropDownBackgroundResource(R.drawable.bg_dropdown)
+            setDropDownVerticalOffset(resources.getDimensionPixelSize(R.dimen.dropdown_offset))
         }
 
-        AlertDialog.Builder(this)
-            .setTitle("Search Hero")
-            .setView(input)
-            .setPositiveButton("Search") { dialog, _ ->
-                val heroName = input.text.toString().trim()
-                if (heroName.isNotEmpty()) {
-                    searchHero(heroName)
-                }
-            }
-            .setNegativeButton("Cancel", null)
-            .show()
-
-        // Setup adapter dan filter untuk autocomplete
-        setupAutoCompleteAdapter(input)
-    }
-
-    private fun setupAutoCompleteAdapter(input: AutoCompleteTextView) {
-        val adapter = object : ArrayAdapter<String>(
+        val adapter = ArrayAdapter(
             this,
-            android.R.layout.simple_dropdown_item_1line,
-            mutableListOf()
-        ) {
-            override fun getFilter(): Filter {
-                return object : Filter() {
-                    override fun performFiltering(constraint: CharSequence?): FilterResults {
-                        val results = FilterResults()
-                        val suggestions = mutableListOf<String>()
-
-                        if (DataHelper.isInitialized && !constraint.isNullOrEmpty()) {
-                            val filterPattern = constraint.toString().lowercase().trim()
-                            DataHelper.allHeroes.forEach { hero ->
-                                if (hero.name.lowercase().contains(filterPattern)) {
-                                    suggestions.add(hero.name)
-                                }
-                            }
-                        }
-
-                        results.values = suggestions
-                        results.count = suggestions.size
-                        return results
-                    }
-
-                    @Suppress("UNCHECKED_CAST")
-                    override fun publishResults(constraint: CharSequence?, results: FilterResults?) {
-                        clear()
-                        results?.values?.let {
-                            addAll(it as List<String>)
-                            notifyDataSetChanged()
-                        }
-                    }
-                }
-            }
-        }
+            R.layout.item_dropdown,
+            R.id.dropdown_item,
+            allHeroNames
+        )
 
         input.setAdapter(adapter)
 
-        // Load semua nama hero saat data siap
-        if (DataHelper.isInitialized) {
-            adapter.addAll(DataHelper.allHeroes.map { it.name })
+        input.setOnItemClickListener { _, _, position, _ ->
+            val selectedHero = adapter.getItem(position)
+            searchDialog?.dismiss()
+            if (selectedHero != null) {
+                searchHero(selectedHero)
+            }
         }
+
+        searchDialog = AlertDialog.Builder(this, R.style.AlertDialogTheme)
+            .setTitle("Search Hero")
+            .setView(dialogView)
+            .setNegativeButton("Cancel", null)
+            .create()
+
+        searchDialog?.show()
+    }
+
+    // FUNGSI BARU: Ambil gambar hero berdasarkan nama
+    private fun getHeroImageResource(heroName: String): Int {
+        val resourceName = heroName.lowercase()
+            .replace(" ", "_")
+            .replace("'", "")
+            .replace("-", "")
+            .replace(".", "")
+        return resources.getIdentifier(resourceName, "drawable", packageName)
     }
 
     private fun searchHero(heroName: String) {
-        if (!DataHelper.isInitialized) {
-            Toast.makeText(this, "Data not ready, please try again in a few seconds", Toast.LENGTH_SHORT).show()
-            return
-        }
-
-        showLoading(true)
         Thread {
-            val hero = DataHelper.getHeroRecommendations(heroName)
-            runOnUiThread {
-                showLoading(false)
-                if (hero != null) {
-                    displayHeroRecommendations(hero)
-                } else {
-                    Toast.makeText(
-                        this@MainActivity,
-                        "Hero '$heroName' not found. Try another name.",
-                        Toast.LENGTH_LONG
-                    ).show()
+            try {
+                val hero = DataHelper.getHeroRecommendations(heroName)
+                runOnUiThread {
+                    if (hero != null) {
+                        currentHero = hero
+                        tvHeroName.text = hero.name
+
+                        // TAMBAHKAN INI: Set gambar hero utama
+                        val imageRes = getHeroImageResource(hero.name)
+                        if (imageRes != 0) {
+                            ivHero.setImageResource(imageRes)
+                        } else {
+                            ivHero.setImageResource(R.drawable.default_hero)
+                        }
+
+                        showHeroesForRole("roam")
+                        val defaultRoleView = findTextViewByText("ROAM")
+                        defaultRoleView?.let { setSelectedRole(it) }
+                    } else {
+                        Toast.makeText(this, "Hero '$heroName' not found", Toast.LENGTH_LONG).show()
+                    }
+                }
+            } catch (e: Exception) {
+                runOnUiThread {
+                    Toast.makeText(this, "Search failed: ${e.message}", Toast.LENGTH_LONG).show()
                 }
             }
         }.start()
     }
 
-    private fun displayHeroRecommendations(hero: Hero) {
-        // Ambil container dari layout
-        val roamContainer = findViewById<LinearLayout>(R.id.roamHeroesContainer)
-        val junglerContainer = findViewById<LinearLayout>(R.id.junglerHeroesContainer)
-        val midContainer = findViewById<LinearLayout>(R.id.midHeroesContainer)
-        val goldContainer = findViewById<LinearLayout>(R.id.goldHeroesContainer)
-        val expContainer = findViewById<LinearLayout>(R.id.explaneHeroesContainer)
-        val metaContainer = findViewById<LinearLayout>(R.id.metaHeroesContainer)
-
-        // Clear isi sebelumnya
-        roamContainer.removeAllViews()
-        junglerContainer.removeAllViews()
-        midContainer.removeAllViews()
-        goldContainer.removeAllViews()
-        expContainer.removeAllViews()
-        metaContainer.removeAllViews()
-
-        val metaList = JsonMeta.loadMetaFromJson(this)
-
-        Log.d("MainActivity", "Displaying recommendations for: ${hero.name}")
-
-        fun addHeroTextView(container: LinearLayout, heroName: String?, color: Int = Color.WHITE) {
-            val textView = TextView(this).apply {
-                text = heroName ?: ""
-                setTextColor(color)
-                gravity = Gravity.CENTER
-                setPadding(8, 16, 8, 16)
-            }
-            container.addView(textView)
+    private fun findTextViewByText(text: String): TextView? {
+        for (i in 0 until roleBar.childCount) {
+            val tv = roleBar.getChildAt(i) as? TextView
+            if (tv?.text?.toString()?.equals(text, ignoreCase = true) == true) return tv
         }
-
-        val maxRows = listOf(
-            hero.recommendation.roam.size,
-            hero.recommendation.jungler.size,
-            hero.recommendation.midlane.size,
-            hero.recommendation.goldlane.size,
-            hero.recommendation.xplane.size,
-            metaList.size
-        ).maxOrNull() ?: 0
-
-        for(i in 0 until 7){
-            addHeroTextView(roamContainer, hero.recommendation.roam.getOrNull(i))
-            addHeroTextView(junglerContainer, hero.recommendation.jungler.getOrNull(i))
-            addHeroTextView(midContainer, hero.recommendation.midlane.getOrNull(i))
-            addHeroTextView(goldContainer, hero.recommendation.goldlane.getOrNull(i))
-            addHeroTextView(expContainer, hero.recommendation.xplane.getOrNull(i))
-        }
-        for (i in 0 until maxRows) {
-            addHeroTextView(metaContainer, metaList.getOrNull(i), Color.YELLOW)
-        }
+        return null
     }
 
+    private inner class HeroAdapter(private val heroes: List<String>) :
+        RecyclerView.Adapter<HeroAdapter.HeroViewHolder>() {
+
+        inner class HeroViewHolder(itemView: View) : RecyclerView.ViewHolder(itemView) {
+            val heroName: TextView = itemView.findViewById(R.id.heroName)
+            val heroImage: ImageView = itemView.findViewById(R.id.ivHero) // TAMBAHKAN INI
+        }
+
+        override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): HeroViewHolder {
+            val view = LayoutInflater.from(parent.context)
+                .inflate(R.layout.item_hero, parent, false)
+            return HeroViewHolder(view)
+        }
+
+        override fun onBindViewHolder(holder: HeroViewHolder, position: Int) {
+            val heroName = heroes[position]
+            holder.heroName.text = heroName
+
+            // Set gambar untuk setiap hero
+            val imageRes = getHeroImageResource(heroName)
+            if (imageRes != 0) {
+                holder.heroImage.setImageResource(imageRes)
+                holder.heroImage.scaleType = ImageView.ScaleType.CENTER_CROP
+            } else {
+                holder.heroImage.setImageResource(R.drawable.default_hero)
+                holder.heroImage.scaleType = ImageView.ScaleType.CENTER_CROP
+            }
+        }
 
 
-
+        override fun getItemCount() = heroes.size
+    }
 }

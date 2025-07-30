@@ -1,293 +1,297 @@
 <?xml version="1.0" encoding="utf-8"?>
-<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<androidx.constraintlayout.widget.ConstraintLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:background="#2f2f2f">
+    android:background="#03142c"
+    android:padding="16dp">
 
-    <!-- Header -->
-    <RelativeLayout
+    <!-- Header: DraftKuy + Coin -->
+    <androidx.constraintlayout.widget.ConstraintLayout
         android:id="@+id/header"
-        android:layout_width="match_parent"
-        android:layout_height="48dp"
-        android:paddingHorizontal="8dp">
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="23dp"
+        android:layout_marginBottom="17dp"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent">
 
         <TextView
-            android:layout_width="wrap_content"
+            android:id="@+id/tvAppTitle"
+            android:layout_width="0dp"
             android:layout_height="wrap_content"
-            android:layout_centerHorizontal="true"
-            android:layout_marginEnd="454dp"
-            android:layout_toStartOf="@+id/coinContainer"
-            android:ellipsize="end"
-            android:maxLines="1"
+            android:layout_marginBottom="15dp"
             android:text="@string/app_name"
-            android:textColor="@color/white"
-            android:textSize="20sp"
-            android:textStyle="bold" />
-
-        <RelativeLayout
-            android:id="@+id/coinContainer"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_alignParentEnd="true"
-            android:layout_centerVertical="true"
-            android:layout_marginEnd="8dp">
-
-            <!-- Coin Icon -->
-            <TextView
-                android:id="@+id/ivCoin"
-                android:layout_width="24dp"
-                android:layout_height="30dp"
-                android:text="🪙"
-                android:textSize="20sp"
-                android:gravity="center"
-                android:textColor="@color/gold"/>
-
-            <TextView
-                android:id="@+id/tvCoins"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_toEndOf="@id/ivCoin"
-                android:text="@string/default_coin_amount"
-                android:textColor="@color/gold"
-                android:layout_marginStart="10dp"/>
-
-            <!-- Add Coins Button -->
-            <Button
-                android:id="@+id/btnAdd"
-                android:layout_width="50dp"
-                android:layout_height="50dp"
-                android:layout_toEndOf="@id/tvCoins"
-                android:text="+"
-                android:textSize="20sp"
-                android:textColor="@color/gold"
-                android:background="?attr/selectableItemBackgroundBorderless"/>
-        </RelativeLayout>
-    </RelativeLayout>
-
-    <!-- Hero Roles Table -->
-    <HorizontalScrollView
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:layout_margin="20dp"
-        android:layout_below="@id/header"
-        android:scrollbars="horizontal"
-        android:fillViewport="true">
+            android:textColor="#fcfffa"
+            android:textSize="26sp"
+            android:textStyle="bold"
+            android:maxLines="1"
+            android:ellipsize="end"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintEnd_toStartOf="@id/layoutCoin"
+            app:layout_constraintTop_toTopOf="parent"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintHorizontal_bias="0" />
 
         <LinearLayout
-            android:layout_width="match_parent"
-            android:layout_height="match_parent"
-            android:orientation="horizontal">
+            android:id="@+id/layoutCoin"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:orientation="horizontal"
+            android:gravity="center_vertical"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintTop_toTopOf="parent"
+            app:layout_constraintBottom_toBottomOf="parent">
 
-            <!-- Contoh Kolom: ROAM -->
-            <LinearLayout
-                android:layout_width="0dp"
-                android:layout_weight="1"
+            <ImageView
+                android:id="@+id/ivCoin"
+                android:layout_width="35dp"
+                android:layout_height="35dp"
+                android:src="@drawable/coin"
+                android:contentDescription="Coin"
+                android:layout_marginEnd="0dp" />
+
+            <TextView
+                android:id="@+id/tvCoinAmount"
+                android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:orientation="vertical"
-                android:padding="8dp"
-                android:background="#222222">
+                android:text="@string/coin_balance"
+                android:textColor="#fcfffa"
+                android:textSize="16sp"
+                android:textStyle="bold"
+                android:layout_marginEnd="4dp" />
 
-                <TextView
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:text="ROAM"
-                    android:textColor="@color/role_roam"
-                    android:textStyle="bold"
-                    android:gravity="center"/>
-
-                <ScrollView
-                    android:layout_width="match_parent"
-                    android:layout_height="200dp"
-                    android:fillViewport="true">
-
-                    <LinearLayout
-                        android:id="@+id/roamHeroesContainer"
-                        android:layout_width="match_parent"
-                        android:layout_height="wrap_content"
-                        android:orientation="vertical" />
-                </ScrollView>
-            </LinearLayout>
-
-            <!-- Contoh Kolom: Jungler -->
-            <LinearLayout
-                android:layout_width="0dp"
-                android:layout_weight="1"
-                android:layout_height="wrap_content"
-                android:orientation="vertical"
-                android:padding="8dp"
-                android:background="#222222">
-
-                <TextView
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:text="JUNGLER"
-                    android:textColor="@color/role_jungler"
-                    android:textStyle="bold"
-                    android:gravity="center"/>
-
-                <ScrollView
-                    android:layout_width="match_parent"
-                    android:layout_height="200dp"
-                    android:fillViewport="true">
-
-                    <LinearLayout
-                        android:id="@+id/junglerHeroesContainer"
-                        android:layout_width="match_parent"
-                        android:layout_height="wrap_content"
-                        android:orientation="vertical" />
-                </ScrollView>
-            </LinearLayout>
-
-            <!-- Contoh Kolom: MID LANE -->
-            <LinearLayout
-                android:layout_width="0dp"
-                android:layout_weight="1"
-                android:layout_height="wrap_content"
-                android:orientation="vertical"
-                android:padding="8dp"
-                android:background="#222222">
-
-                <TextView
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:text="MID LANE"
-                    android:textColor="@color/role_midlane"
-                    android:textStyle="bold"
-                    android:gravity="center"/>
-
-                <ScrollView
-                    android:layout_width="match_parent"
-                    android:layout_height="200dp"
-                    android:fillViewport="true">
-
-                    <LinearLayout
-                        android:id="@+id/midHeroesContainer"
-                        android:layout_width="match_parent"
-                        android:layout_height="wrap_content"
-                        android:orientation="vertical" />
-                </ScrollView>
-            </LinearLayout>
-            <!-- Contoh Kolom: GOLD LANE -->
-            <LinearLayout
-                android:layout_width="0dp"
-                android:layout_weight="1"
-                android:layout_height="wrap_content"
-                android:orientation="vertical"
-                android:padding="8dp"
-                android:background="#222222">
-
-                <TextView
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:text="GOLD LANE"
-                    android:textColor="@color/role_goldlane"
-                    android:textStyle="bold"
-                    android:gravity="center"/>
-
-                <ScrollView
-                    android:layout_width="match_parent"
-                    android:layout_height="200dp"
-                    android:fillViewport="true">
-
-                    <LinearLayout
-                        android:id="@+id/goldHeroesContainer"
-                        android:layout_width="match_parent"
-                        android:layout_height="wrap_content"
-                        android:orientation="vertical" />
-                </ScrollView>
-            </LinearLayout>
-
-            <!-- Contoh Kolom: EXP LANE -->
-            <LinearLayout
-                android:layout_width="0dp"
-                android:layout_weight="1"
-                android:layout_height="wrap_content"
-                android:orientation="vertical"
-                android:padding="8dp"
-                android:background="#222222">
-
-                <TextView
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:text="EXP LANE"
-                    android:textColor="@color/role_xplane"
-                    android:textStyle="bold"
-                    android:gravity="center"/>
-
-                <ScrollView
-                    android:layout_width="match_parent"
-                    android:layout_height="200dp"
-                    android:fillViewport="true">
-
-                    <LinearLayout
-                        android:id="@+id/explaneHeroesContainer"
-                        android:layout_width="match_parent"
-                        android:layout_height="wrap_content"
-                        android:orientation="vertical" />
-                </ScrollView>
-            </LinearLayout>
-
-
-
-            <!-- Ulangi untuk kolom lain (XPLANE, GOLDLANE, dsb) -->
-
-            <!-- Contoh Kolom META -->
-            <LinearLayout
-                android:layout_width="0dp"
-                android:layout_weight="1"
-                android:layout_height="wrap_content"
-                android:orientation="vertical"
-                android:padding="8dp"
-                android:background="#333333">
-
-                <TextView
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:text="META"
-                    android:textColor="@color/white"
-                    android:textStyle="bold"
-                    android:gravity="center"/>
-
-                <ScrollView
-                    android:layout_width="match_parent"
-                    android:layout_height="200dp"
-                    android:fillViewport="true">
-
-                    <LinearLayout
-                        android:id="@+id/metaHeroesContainer"
-                        android:layout_width="match_parent"
-                        android:layout_height="wrap_content"
-                        android:orientation="vertical" />
-                </ScrollView>
-            </LinearLayout>
-
+            <ImageButton
+                android:id="@+id/btnTopUp"
+                android:layout_width="22dp"
+                android:layout_height="22dp"
+                android:background="@android:color/transparent"
+                android:src="@android:drawable/ic_input_add"
+                android:contentDescription="Top Up"
+                app:tint="#FFD700"/>
         </LinearLayout>
-    </HorizontalScrollView>
+    </androidx.constraintlayout.widget.ConstraintLayout>
 
-    <ProgressBar
-        android:id="@+id/progressBar"
-        android:layout_width="wrap_content"
+    <!-- Divider 1 -->
+    <View
+        android:id="@+id/divider1"
+        android:layout_width="0dp"
+        android:layout_height="1dp"
+        android:background="#334155"
+        android:layout_marginBottom="16dp"
+        app:layout_constraintTop_toBottomOf="@id/header"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"/>
+
+    <!-- Target Hero -->
+    <TextView
+        android:id="@+id/tvTarget"
+        android:layout_width="0dp"
         android:layout_height="wrap_content"
-        android:layout_centerInParent="true"
-        android:visibility="gone"/>
-    <!-- Action Buttons -->
+        android:text="@string/target_to_counter"
+        android:textColor="#7baec7"
+        android:textSize="16sp"
+        android:layout_marginTop="10dp"
+        android:layout_marginBottom="4dp"
+        app:layout_constraintTop_toBottomOf="@id/divider1"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"/>
+
+    <!-- Hero Header (TAMBAHAN BARU) -->
+    <androidx.constraintlayout.widget.ConstraintLayout
+        android:id="@+id/heroHeader"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        app:layout_constraintTop_toBottomOf="@id/tvTarget"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        android:layout_marginBottom="8dp">
+
+        <TextView
+            android:id="@+id/tvHeroName"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:textColor="#FFFFFF"
+            android:textSize="32sp"
+            android:textStyle="bold"
+            android:gravity="start"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintEnd_toStartOf="@+id/ivHero"
+            app:layout_constraintTop_toTopOf="parent"
+            app:layout_constraintBottom_toBottomOf="parent"/>
+
+        <de.hdodenhof.circleimageview.CircleImageView
+            android:id="@+id/ivHero"
+            android:layout_width="60dp"
+            android:layout_height="60dp"
+            android:layout_marginStart="16dp"
+            android:contentDescription="Hero Image"
+            android:layout_marginEnd="10dp"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintTop_toTopOf="parent"
+            app:layout_constraintBottom_toBottomOf="parent"/>
+
+    </androidx.constraintlayout.widget.ConstraintLayout>
+
+    <!-- Role Wrapper Container -->
     <LinearLayout
-        android:layout_width="wrap_content"
+        android:id="@+id/roleWrapper"
+        android:layout_width="0dp"
         android:layout_height="wrap_content"
-        android:layout_alignParentEnd="true"
-        android:layout_alignParentBottom="true"
-        android:layout_margin="18dp"
-        android:orientation="vertical">
+        android:layout_marginBottom="16dp"
+        android:background="@drawable/bg_role_wrapper"
+        android:padding="10dp"
+        android:orientation="vertical"
+        android:layout_marginTop="10dp"
+        app:layout_constraintTop_toBottomOf="@id/heroHeader"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintEnd_toEndOf="parent">
 
-        <Button
-            android:id="@+id/btnSearch"
-            android:layout_width="100dp"
-            android:layout_height="45dp"
-            android:layout_marginBottom="8dp"
-            android:backgroundTint="@color/blue"
-            android:text="@string/btn_search"
-            android:textColor="@color/white" />
+        <HorizontalScrollView
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:scrollbars="none">
 
+            <LinearLayout
+                android:id="@+id/roleBar"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:orientation="horizontal"
+                android:gravity="center_vertical">
+
+                <TextView
+                    android:id="@+id/tvRoleRoam"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginHorizontal="12dp"
+                    android:text="@string/role_roam"
+                    android:textStyle="bold"
+                    android:textColor="#FFD700"
+                    android:textSize="16sp"
+                    android:clickable="true"
+                    android:focusable="true" />
+
+                <TextView
+                    android:id="@+id/tvRoleJungler"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginHorizontal="12dp"
+                    android:text="@string/role_jungler"
+                    android:textStyle="bold"
+                    android:textColor="#FFD700"
+                    android:textSize="16sp"
+                    android:clickable="true"
+                    android:focusable="true" />
+
+                <TextView
+                    android:id="@+id/tvRoleMid"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginHorizontal="12dp"
+                    android:text="@string/role_mid"
+                    android:textStyle="bold"
+                    android:textColor="#FFD700"
+                    android:textSize="16sp"
+                    android:clickable="true"
+                    android:focusable="true" />
+
+                <TextView
+                    android:id="@+id/tvRoleGold"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginHorizontal="12dp"
+                    android:text="@string/role_gold"
+                    android:textStyle="bold"
+                    android:textColor="#FFD700"
+                    android:textSize="16sp"
+                    android:clickable="true"
+                    android:focusable="true" />
+
+                <TextView
+                    android:id="@+id/tvRoleXp"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginHorizontal="12dp"
+                    android:text="@string/role_xp"
+                    android:textStyle="bold"
+                    android:textColor="#FFD700"
+                    android:textSize="16sp"
+                    android:clickable="true"
+                    android:focusable="true" />
+
+                <TextView
+                    android:id="@+id/tvRoleMeta"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginHorizontal="12dp"
+                    android:text="@string/role_meta"
+                    android:textStyle="bold"
+                    android:textColor="#FFD700"
+                    android:textSize="16sp"
+                    android:clickable="true"
+                    android:focusable="true" />
+
+            </LinearLayout>
+        </HorizontalScrollView>
     </LinearLayout>
 
-</RelativeLayout>
+    <!-- Divider 2 -->
+    <View
+        android:id="@+id/divider2"
+        android:layout_width="0dp"
+        android:layout_height="1dp"
+        android:background="#334155"
+        android:layout_marginTop="16dp"
+        app:layout_constraintTop_toBottomOf="@id/roleWrapper"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"/>
+
+    <!-- Heroes List -->
+    <androidx.recyclerview.widget.RecyclerView
+        android:id="@+id/rvHeroes"
+        android:layout_width="0dp"
+        android:layout_height="0dp"
+        android:clipToPadding="false"
+        android:layout_marginTop="16dp"
+        app:layout_constraintTop_toBottomOf="@id/divider2"
+        app:layout_constraintBottom_toTopOf="@id/btnSearch"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"/>
+
+    <!-- Search Hero Button -->
+    <LinearLayout
+        android:id="@+id/btnSearch"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:orientation="horizontal"
+        android:gravity="center_vertical"
+        android:layout_marginBottom="27dp"
+        android:paddingVertical="12dp"
+        android:paddingHorizontal="20dp"
+        android:background="@drawable/bg_button_search"
+        android:clickable="true"
+        android:focusable="true"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintEnd_toEndOf="parent">
+
+        <TextView
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_weight="1"
+            android:text="@string/search_hero"
+            android:textColor="#FFFFFF"
+            android:textSize="16sp"
+            android:textStyle="bold" />
+
+        <ImageView
+            android:layout_width="20dp"
+            android:layout_height="20dp"
+            android:src="@drawable/ic_search"
+            app:tint="#FFFFFF"
+            android:contentDescription="Search Icon" />
+    </LinearLayout>
+
+</androidx.constraintlayout.widget.ConstraintLayout>

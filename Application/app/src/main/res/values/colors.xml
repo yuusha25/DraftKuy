@@ -1,29 +1,41 @@
-<?xml version="1.0" encoding="utf-8"?>
 <resources>
-    <!-- Background Colors -->
-    <color name="background_dark">#1E1E1E</color>
-    <color name="header_background">#121212</color>
-    <color name="table_background">#121212</color>
+    <!-- Base Colors -->
+    <color name="black">#FF000000</color>
+    <color name="white">#FFFFFFFF</color>
+    <color name="dark_blue">#03142C</color>
+    <color name="deep_blue">#020D1F</color>
+    <color name="gold">#FFD700</color>
+    <color name="light_gold">#FFECB3</color>
+    <color name="dark_gold">#FFC000</color>
+    <color name="accent_blue">#00B4D8</color>
+    <color name="yellow">#FFD700</color>
+    <color name="orange">#F25324</color>
 
     <!-- Text Colors -->
-    <color name="white">#FFFFFF</color>
-    <color name="gold">#FFD700</color>
+    <color name="text_primary">#F8F9FA</color>
+    <color name="text_secondary">#ADB5BD</color>
+    <color name="text_tertiary">#6C757D</color>
 
     <!-- Role Colors -->
-    <color name="role_roam">#FF5722</color>
-    <color name="role_jungler">#4CAF50</color>
-    <color name="role_midlane">#2196F3</color>
-    <color name="role_goldlane">#FFEB3B</color>
-    <color name="role_xplane">#9C27B0</color>
-    <color name="purple_200">#BB86FC</color>
-    <color name="black">#000000</color>
-    <!-- Button Colors -->
-    <color name="blue">#2196F3</color>
-    <color name="red">#F44336</color>
+    <color name="roam">#FF5722</color>
+    <color name="jungler">#4CAF50</color>
+    <color name="mid">#2196F3</color>
+    <color name="gold_role">#FFC107</color>
+    <color name="xp">#9C27B0</color>
+    <color name="meta">#778DA9</color>
 
-    <!-- Theme Colors -->
-    <color name="purple_500">#6200EE</color>
-    <color name="purple_700">#3700B3</color>
-    <color name="teal_200">#03DAC5</color>
-    <color name="teal_700">#018786</color>
+    <!-- UI Elements -->
+    <color name="card_bg">#0A1A35</color>
+    <color name="divider">#1E3A6E</color>
+    <color name="search_bg">#0D47A1</color>
+    <color name="button_pressed">#1565C0</color>
+    <color name="primary">#03142C</color> <!-- Your dark blue -->
+    <color name="primary_dark">#020D1F</color> <!-- Darker blue -->
+    <color name="primary_light">#7baec7</color> <!-- Your light blue -->
+    <color name="accent">#FFD700</color> <!-- Your gold color -->
+
+    <!-- For night mode -->
+    <color name="purple_200">#FFBB86FC</color>
+    <color name="purple_700">#FF3700B3</color>
+    <color name="teal_200">#FF03DAC5</color>
 </resources>
