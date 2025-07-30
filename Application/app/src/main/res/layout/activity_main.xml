@@ -100,6 +100,7 @@
         app:layout_constraintEnd_toEndOf="parent"/>
 
     <!-- Hero Header (TAMBAHAN BARU) -->
+    <!-- Hero Header (Updated with proper CardView) -->
     <androidx.constraintlayout.widget.ConstraintLayout
         android:id="@+id/heroHeader"
         android:layout_width="0dp"
@@ -118,21 +119,30 @@
             android:textStyle="bold"
             android:gravity="start"
             app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintEnd_toStartOf="@+id/ivHero"
+            app:layout_constraintEnd_toStartOf="@+id/cardHero"
             app:layout_constraintTop_toTopOf="parent"
             app:layout_constraintBottom_toBottomOf="parent"/>
 
-        <de.hdodenhof.circleimageview.CircleImageView
-            android:id="@+id/ivHero"
-            android:layout_width="60dp"
-            android:layout_height="60dp"
+        <androidx.cardview.widget.CardView
+            android:id="@+id/cardHero"
+            android:layout_width="75dp"
+            android:layout_height="67dp"
             android:layout_marginStart="16dp"
-            android:contentDescription="Hero Image"
-            android:layout_marginEnd="10dp"
+            app:cardCornerRadius="8dp"
+            app:cardElevation="4dp"
+            app:cardBackgroundColor="@android:color/transparent"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintTop_toTopOf="parent"
-            app:layout_constraintBottom_toBottomOf="parent"/>
+            app:layout_constraintBottom_toBottomOf="parent">
 
+            <ImageView
+                android:id="@+id/ivHero"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:scaleType="centerCrop"
+                android:contentDescription="Hero Image"
+                android:background="@color/card_background"/>
+        </androidx.cardview.widget.CardView>
     </androidx.constraintlayout.widget.ConstraintLayout>
 
     <!-- Role Wrapper Container -->
