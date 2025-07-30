@@ -33,7 +33,7 @@
     <color name="primary_dark">#020D1F</color> <!-- Darker blue -->
     <color name="primary_light">#7baec7</color> <!-- Your light blue -->
     <color name="accent">#FFD700</color> <!-- Your gold color -->
-
+    <color name="card_background">#1E334155</color>
     <!-- For night mode -->
     <color name="purple_200">#FFBB86FC</color>
     <color name="purple_700">#FF3700B3</color>

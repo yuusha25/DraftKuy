@@ -1,26 +1,43 @@
 <?xml version="1.0" encoding="utf-8"?>
-<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<androidx.cardview.widget.CardView
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
-    android:orientation="horizontal"
-    android:layout_marginBottom="8dp"
-    android:padding="7dp"
-    android:background="@drawable/bg_item_border"
-    android:gravity="center_vertical">
+    android:layout_margin="4dp"
+    app:cardCornerRadius="8dp"
+    app:cardElevation="2dp"
+    app:cardBackgroundColor="@android:color/transparent">
 
-    <de.hdodenhof.circleimageview.CircleImageView
-        android:id="@+id/ivHero"
-        android:layout_width="50dp"
-        android:layout_height="50dp"
-        android:layout_marginEnd="16dp"
-        android:contentDescription="Hero Image"/>
-
-    <TextView
-        android:id="@+id/heroName"
-        android:layout_width="0dp"
+    <LinearLayout
+        android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:layout_weight="1"
-        android:textColor="#FFFFFF"
-        android:textSize="18sp"
-        android:textStyle="bold"/>
-</LinearLayout>
+        android:orientation="horizontal"
+        android:padding="8dp"
+        android:background="@drawable/bg_item_border">
+
+        <androidx.cardview.widget.CardView
+            android:layout_width="74dp"
+            android:layout_height="60dp"
+            app:cardCornerRadius="8dp"
+            app:cardElevation="2dp">
+
+            <ImageView
+                android:id="@+id/ivHero"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:scaleType="centerCrop"
+                android:contentDescription="Hero Image"/>
+        </androidx.cardview.widget.CardView>
+
+        <TextView
+            android:id="@+id/heroName"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_weight="1"
+            android:textColor="#FFFFFF"
+            android:textSize="18sp"
+            android:textStyle="bold"
+            android:paddingStart="12dp"/>
+    </LinearLayout>
+</androidx.cardview.widget.CardView>
