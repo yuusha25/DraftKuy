@@ -17,6 +17,8 @@ import com.example.draftkuy.R
 import com.example.draftkuy.models.Hero
 import com.example.draftkuy.utils.DataHelper
 import com.example.draftkuy.utils.JsonMeta
+import android.content.Intent
+
 
 class MainActivity : AppCompatActivity() {
 
@@ -35,6 +37,11 @@ class MainActivity : AppCompatActivity() {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_main)
 
+        val btnTopUp = findViewById<ImageButton>(R.id.btnTopUp)
+        btnTopUp.setOnClickListener {
+            val intent = Intent(this, TopUpActivity::class.java)
+            startActivity(intent)
+        }
         initViews()
         setupRecyclerView()
         setupClickListeners()
@@ -51,9 +58,9 @@ class MainActivity : AppCompatActivity() {
 
         tvCoinAmount.text = "1,000"
 
-        findViewById<View>(R.id.btnTopUp).setOnClickListener {
-            Toast.makeText(this, "Add coins clicked", Toast.LENGTH_SHORT).show()
-        }
+//        findViewById<View>(R.id.btnTopUp).setOnClickListener {
+//            Toast.makeText(this, "Add coins clicked", Toast.LENGTH_SHORT).show()
+//        }
     }
 
     private fun loadAllHeroNames() {
@@ -241,4 +248,6 @@ class MainActivity : AppCompatActivity() {
 
         override fun getItemCount() = heroes.size
     }
+
+
 }
