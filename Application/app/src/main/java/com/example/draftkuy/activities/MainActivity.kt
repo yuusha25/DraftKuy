@@ -169,9 +169,10 @@ class MainActivity : AppCompatActivity() {
     // FUNGSI BARU: Ambil gambar hero berdasarkan nama
     private fun getHeroImageResource(heroName: String): Int {
         val resourceName = heroName.lowercase()
-            .replace(" ", "_")
+            .replace(" ", "")
             .replace("'", "")
             .replace("-", "")
+            .replace("&", "")
             .replace(".", "")
         return resources.getIdentifier(resourceName, "drawable", packageName)
     }
