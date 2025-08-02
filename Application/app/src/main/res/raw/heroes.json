@@ -502,8 +502,8 @@
   {
     "name": "Yin",
     "recommendation": {
-      "roam": ["Franco", "Kaja", "Tigreal", "Hylos", "Khufra"],
-      "jungler": ["Hayabusa", "Lancelot", "Ling", "Baxia", "Uranus"],
+      "roam": ["Franco", "Kalea", "Tigreal", "Hylos", "Khufra"],
+      "jungler": ["Hayabusa", "Lancelot", "Ling", "Fanny", "Uranus"],
       "midlane": ["Kadita", "Valir", "Cecilion", "Lunox", "Kagura"],
       "goldlane": ["Wanwan", "Irithel", "Granger", "Moskov", "Kimmy"],
       "xplane": ["Thamuz", "Yu Zhong", "Benedetta", "Ruby", "Freya"]
@@ -520,13 +520,23 @@
     }
   },
   {
+    "name": "Lukas",
+    "recommendation": {
+      "roam": ["Gatotkaca", "Badang", "Kalea", "Mathilda", "Franco"],
+      "jungler": ["Hanzo", "Lancelot", "Baxia", "X.borg", "Alpha"],
+      "midlane": ["Zhuxin", "Pharsa", "Cecilion", "Valir", "Yve"],
+      "goldlane": ["Wanwan", "Irithel", "Granger", "Karrie", "Nathan"],
+      "xplane": ["Valentina", "Gatotkaca", "Cici", "Gloo", "Phoveus"]
+    }
+  },
+  {
     "name": "Rafaela",
     "recommendation": {
-      "roam": ["Khaleed", "Hylos", "Khufra", "Franco", "Badang"],
+      "roam": ["Kalea", "Hylos", "Khufra", "Franco", "Badang"],
       "jungler": ["Joy", "Fanny", "Lancelot", "Ling", "Yi Sun-shin"],
       "midlane": ["Pharsa", "Kadita", "Xavier", "Yve", "Cecilion"],
       "goldlane": ["Wanwan", "Irithel", "Granger", "Claude", "Harith"],
-      "xplane": ["Khaleed", "Lapu-Lapu", "Phoveus", "Khaleed", "Yu Zhong"]
+      "xplane": ["Cici", "Lapu-Lapu", "Phoveus", "Kalea", "Gatotkaca"]
     }
   },
   {
@@ -536,37 +546,37 @@
       "jungler": ["Joy", "Fanny", "Lancelot", "Ling", "Yi Sun-shin"],
       "midlane": ["Pharsa", "Kadita", "Xavier", "Yve", "Cecilion"],
       "goldlane": ["Freya", "Irithel", "Granger", "Claude", "Harith"],
-      "xplane": ["Freya", "Guinevere", "Yin", "Lapu-Lapu", "Benedetta"]
+      "xplane": ["Freya", "Guinevere", "Yin", "Lapu-Lapu", "Kalea"]
     }
   },
   {
     "name": "Diggie",
     "recommendation": {
-      "roam": ["Hylos", "Selena", "Hilda", "Natalia", "Arlott"],
+      "roam": ["Hylos", "Selena", "Hilda", "Natalia", "Rafaela"],
       "jungler": ["Joy", "Fanny", "Lancelot", "Ling", "Yi Sun-shin"],
       "midlane": ["Pharsa", "Harley", "Gusion", "Chang'e"],
-      "goldlane": ["Wanwan", "Irithel", "Granger", "Kimmy", "Harith"],
+      "goldlane": ["Wanwan", "Irithel", "Granger", "Esmeralda", "Melissa"],
       "xplane": ["Paquito", "Lapu-Lapu", "Argus", "Arlott", "Hilda"]
     }
   },
   {
     "name": "Angela",
     "recommendation": {
-      "roam": ["Franco", "Kaja", "Khaleed", "Saber", "Kadita"],
+      "roam": ["Franco", "Kaja", "Kalea", "Saber", "Kadita"],
       "jungler": ["Joy", "Fanny", "Lancelot", "Yin", "Yi Sun-shin"],
       "midlane": ["Pharsa", "Kadita", "Xavier", "Selena", "Cecilion"],
       "goldlane": ["Wanwan", "Irithel", "Granger", "Kimmy", "Harith"],
-      "xplane": ["Lapu-Lapu", "Zilong", "Argus", "Yin", "Yu Zhong"]
+      "xplane": ["Lapu-Lapu", "Zilong", "Esmeralda", "Yin", "Yu Zhong"]
     }
   },
   {
     "name": "Kaja",
     "recommendation": {
-      "roam": ["Badang", "Chip", "Hylos", "Khaleed", "Tigreal"],
-      "jungler": ["Martis", "Lancelot", "Akai", "Lapu-Lapu"],
-      "midlane": ["Vexana", "Valir", "Aurora", "Nana"],
+      "roam": ["Badang", "Chip", "Hylos", "Gatotkaca", "Tigreal"],
+      "jungler": ["Martis", "Lancelot", "Akai", "Lukas"],
+      "midlane": ["Vexana", "Valir", "Aurora", "Nana", "Pharsa"],
       "goldlane": ["Sun", "Irithel", "Clint", "Lesley"],
-      "xplane": ["Badang", "Phoveus", "Lapu-Lapu", "Khaleed", "Lapu-Lapu"]
+      "xplane": ["Badang", "Phoveus", "Lapu-Lapu", "Kalea", "Lukas"]
     }
   },
   {
@@ -576,16 +586,16 @@
       "jungler": ["Joy", "Hayabusa", "Lancelot", "Ling", "Yi Sun-shin"],
       "midlane": ["Pharsa", "Lylia", "Xavier", "Yve", "Cecilion"],
       "goldlane": ["Wanwan", "Irithel", "Granger", "Claude", "Harith"],
-      "xplane": ["Edith", "Lapu-Lapu", "Khaleed", "Akai", "Lapu-Lapu"]
+      "xplane": ["Edith", "Lapu-Lapu", "Khaleed", "Akai", "Arlott"]
     }
   },
   {
     "name": "Carmilla",
     "recommendation": {
       "roam": ["Badang", "Selena", "Khaleed", "Khaleed"],
-      "jungler": ["Lancelot", "Hayabusa", "Alpha", "Suyou"],
+      "jungler": ["Lancelot", "Hayabusa", "Alpha", "Yi Sun-shin", "Fredrinn"],
       "midlane": ["Pharsa", "Xavier", "Yve", "Zhask", "Kimmy"],
-      "goldlane": ["Karrie", "Irithel", "Granger", "Claude", "Brody"],
+      "goldlane": ["Karrie", "Irithel", "Granger", "Claude", "Wanwan"],
       "xplane": ["Cici", "Gloo", "Lapu-Lapu", "Badang", "Yu Zhong"]
     }
   },
@@ -595,8 +605,8 @@
       "roam": ["Franco", "Kaja", "Khaleed", "Chou", "Hilda"],
       "jungler": ["Joy", "Fanny", "Lancelot", "Hayabusa", "Yi Sun-shin"],
       "midlane": ["Valentina", "Yve", "Faramis", "Harley"],
-      "goldlane": ["Beatrix", "Irithel", "Claude", "Moskov", "Harith"],
-      "xplane": ["Phoveus", "Gatotkaca", "Khaleed", "Benedetta"]
+      "goldlane": ["Wanwan", "Irithel", "Claude", "Moskov", "Harith"],
+      "xplane": ["Phoveus", "Gatotkaca", "Gloo", "Lapu-Lapu", "Cici"]
     }
   },
   {
@@ -627,6 +637,16 @@
       "midlane": ["Zhuxin", "Yve", "Aurora", "Pharsa", "Cecilion"],
       "goldlane": ["Clint", "Harith", "Freya", "Roger", "Claude"],
       "xplane": ["Lapu-Lapu", "Yu Zhong", "Esmeralda", "Uranus", "Phoveus"]
+    }
+  },
+  {
+    "name": "Kalea",
+    "recommendation": {
+      "roam": ["Tigreal", "Jawhead", "Floryn", "Diggie", "Gatotkaca"],
+      "jungler": ["Lancelot", "Suyou", "Hanzo", "Yi Sun-shin", "Martis"],
+      "midlane": ["Zhuxin", "Valir", "Novaria", "Pharsa", "Zhask"],
+      "goldlane": ["Wanwan", "Harith", "Irithel", "Moskov", "Kimmy"],
+      "xplane": ["Lapu-Lapu", "Phoveus", "Gloo", "Badang"]
     }
   },
   {
@@ -943,7 +963,7 @@
     "name": "Yi Sun-shin",
     "recommendation": {
       "roam": ["Franco", "Kaja", "Kalea", "Badang", "Chou"],
-      "jungler": ["Lancelot", "Suyou", "Hayabusa", "Joy", "Fanny"],
+      "jungler": ["Lancelot", "Alucard", "Hayabusa", "Joy", "Fanny"],
       "midlane": ["Kimmy", "Pharsa", "Novaria", "Kadita", "Cecilion"],
       "goldlane": ["Moskov", "Wanwan", "Claude", "Granger", "Irithel"],
       "xplane": ["Lapu-Lapu", "Minsitthar", "Arlott", "Kalea", "Phoveus"]
