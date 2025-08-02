@@ -53,7 +53,7 @@
                 android:layout_marginEnd="0dp" />
 
             <TextView
-                android:id="@+id/tvCoinAmount"
+                android:id="@+id/txtCoin"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:text="@string/coin_balance"
@@ -165,7 +165,7 @@
                         android:textStyle="bold" />
 
                     <Button
-                        android:id="@+id/btnTopupIklan"
+                        android:id="@+id/btnAds"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
                         android:layout_marginTop="8dp"

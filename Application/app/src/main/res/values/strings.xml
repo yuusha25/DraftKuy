@@ -5,7 +5,7 @@
     <!-- UI Text -->
     <string name="target_to_counter">Target to Counter:</string>
     <string name="search_hero">SEARCH HERO</string>
-    <string name="coin_balance">1000</string>
+    <string name="coin_balance">0</string>
     <string name="hero_image">Hero Image</string>
     <!-- Roles -->
     <string name="role_roam">ROAM</string>
