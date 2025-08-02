@@ -14,14 +14,12 @@
         android:supportsRtl="true"
         android:theme="@style/Theme.DraftKuy">
 
-        <manifest>
-            <application>
-                <!-- Sample AdMob app ID: ca-app-pub-3940256099942544~3347511713 -->
-                <meta-data
-                    android:name="com.google.android.gms.ads.APPLICATION_ID"
-                    android:value="ca-app-pub-8805130276612011~9295842372"/>
-            </application>
-        </manifest>
+
+        <!-- Sample AdMob app ID: ca-app-pub-3940256099942544~3347511713 -->
+        <meta-data
+            android:name="com.google.android.gms.ads.APPLICATION_ID"
+            android:value="ca-app-pub-8805130276612011~9295842372"/>
+
 
 
         <activity

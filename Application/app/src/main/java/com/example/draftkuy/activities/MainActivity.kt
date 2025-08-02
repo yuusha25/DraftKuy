@@ -18,6 +18,7 @@ import com.example.draftkuy.models.Hero
 import com.example.draftkuy.utils.DataHelper
 import com.example.draftkuy.utils.JsonMeta
 import android.content.Intent
+import com.example.draftkuy.activities.TopUpActivity
 
 
 class MainActivity : AppCompatActivity() {
@@ -49,19 +50,27 @@ class MainActivity : AppCompatActivity() {
         supportActionBar?.hide()
     }
 
+    override fun onResume() {
+        super.onResume()
+        tvCoinAmount.text = getCoins().toString()
+    }
+
+
+    private fun getCoins(): Int {
+        val prefs = getSharedPreferences("user_data", MODE_PRIVATE)
+        return prefs.getInt("coins", 0)
+    }
+
     private fun initViews() {
         tvHeroName = findViewById(R.id.tvHeroName)
         rvHeroes = findViewById(R.id.rvHeroes)
         roleBar = findViewById(R.id.roleBar)
-        tvCoinAmount = findViewById(R.id.tvCoinAmount)
-        ivHero = findViewById(R.id.ivHero) // TAMBAHKAN INI
+        tvCoinAmount = findViewById(R.id.txtCoin)
+        ivHero = findViewById(R.id.ivHero)
 
-        tvCoinAmount.text = "1,000"
-
-//        findViewById<View>(R.id.btnTopUp).setOnClickListener {
-//            Toast.makeText(this, "Add coins clicked", Toast.LENGTH_SHORT).show()
-//        }
+        tvCoinAmount.text = getCoins().toString()
     }
+
 
     private fun loadAllHeroNames() {
         if (!DataHelper.isInitialized) {

@@ -111,4 +111,6 @@ class TopUpActivity : AppCompatActivity() {
         val txtCoin = findViewById<TextView>(R.id.txtCoin)
         txtCoin.text = "${getCoins()}"
     }
+
+
 }
