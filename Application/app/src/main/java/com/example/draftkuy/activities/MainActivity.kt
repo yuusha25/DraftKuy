@@ -18,6 +18,10 @@ import com.example.draftkuy.models.Hero
 import com.example.draftkuy.utils.DataHelper
 import com.example.draftkuy.utils.JsonMeta
 import android.content.Intent
+
+import com.getkeepsafe.taptargetview.TapTarget
+import com.getkeepsafe.taptargetview.TapTargetSequence
+
 import com.example.draftkuy.activities.TopUpActivity
 
 
@@ -57,6 +61,93 @@ class MainActivity : AppCompatActivity() {
         setupClickListeners()
         loadAllHeroNames()
         supportActionBar?.hide()
+
+        showTutorial()
+
+    }
+
+    private fun showTutorial() {
+        val prefs = getSharedPreferences("app_prefs", MODE_PRIVATE)
+        if (!prefs.getBoolean("tutorial_shown", false)) {
+            findViewById<View>(R.id.ivCoin).post {
+                TapTargetSequence(this)
+                    .targets(
+                        // Target 1: Icon Koin
+                        TapTarget.forView(
+                            findViewById(R.id.ivCoin),
+                            "Koin Pencarian",
+                            "Setiap pencarian hero akan mengurangi 1 koin Anda"
+                        )
+                            .outerCircleColor(R.color.orange)
+                            .targetCircleColor(R.color.transparent) // Menggunakan resource warna
+                            .titleTextSize(18)
+                            .descriptionTextSize(14)
+                            .textColor(R.color.white) // Menggunakan resource warna
+                            .dimColor(R.color.black)
+                            .drawShadow(true)
+                            .cancelable(false)
+                            .transparentTarget(true)
+                            .targetRadius(35),
+
+                        // Target 2: Tombol Search
+                        TapTarget.forView(
+                            findViewById(R.id.btnSearch),
+                            "Pencarian Hero",
+                            "Gunakan tombol ini untuk mencari hero yang ingin Anda counter"
+                        )
+                            .outerCircleColor(R.color.blue)
+                            .targetCircleColor(R.color.transparent)
+                            .titleTextSize(18)
+                            .descriptionTextSize(14)
+                            .textColor(R.color.white)
+                            .dimColor(R.color.black)
+                            .drawShadow(true)
+                            .cancelable(false)
+                            .transparentTarget(true),
+
+                        // Target 3: Nama Hero
+                        TapTarget.forView(
+                            findViewById(R.id.ivHero),
+                            "Hero Target",
+                            "Nama hero yang Anda pilih akan muncul di sini"
+                        )
+                            .outerCircleColor(R.color.purple_500)
+                            .targetCircleColor(R.color.transparent)
+                            .titleTextSize(18)
+                            .descriptionTextSize(14)
+                            .textColor(R.color.white)
+                            .dimColor(R.color.black)
+                            .drawShadow(true)
+                            .cancelable(false)
+                            .transparentTarget(true),
+
+                        // Target 4: Daftar Rekomendasi
+                        TapTarget.forView(
+                            findViewById(R.id.rvHeroes),
+                            "Rekomendasi Hero",
+                            "Daftar hero terbaik untuk counter akan muncul di sini"
+                        )
+                            .outerCircleColor(R.color.teal_700)
+                            .targetCircleColor(R.color.transparent)
+                            .titleTextSize(18)
+                            .descriptionTextSize(14)
+                            .textColor(R.color.white)
+                            .dimColor(R.color.black)
+                            .drawShadow(true)
+                            .cancelable(false)
+                            .transparentTarget(true)
+                    )
+                    .listener(object : TapTargetSequence.Listener {
+                        override fun onSequenceFinish() {
+                            prefs.edit().putBoolean("tutorial_shown", true).apply()
+                        }
+
+                        override fun onSequenceStep(lastTarget: TapTarget?, targetClicked: Boolean) {}
+                        override fun onSequenceCanceled(lastTarget: TapTarget?) {}
+                    })
+                    .start()
+            }
+        }
     }
 
     override fun onResume() {
