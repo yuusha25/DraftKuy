@@ -4,7 +4,7 @@
 
     <!-- UI Text -->
     <string name="target_to_counter">Target to Counter:</string>
-    <string name="search_hero">SEARCH HERO</string>
+    <string name="search_hero">CARI HERO</string>
     <string name="coin_balance">0</string>
     <string name="hero_image">Hero Image</string>
     <!-- Roles -->
@@ -16,7 +16,7 @@
     <string name="role_meta">META</string>
 
     <!-- Search -->
-    <string name="search_hint">Enter hero name&#8230;</string>
+    <string name="search_hint">Masukkan nama hero&#8230;</string>
 
     <!-- Messages -->
     <string name="data_loaded">Hero data loaded successfully</string>

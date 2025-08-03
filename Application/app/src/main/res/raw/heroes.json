@@ -903,10 +903,10 @@
     "name": "Ling",
     "recommendation": {
       "roam": ["Hilda", "Khurfa", "Kalea", "Minsitthar", "Ruby"],
-      "jungler": ["Lancelot", "Baxia", "Fredrinn", "Lapu-Lapu", "Joy", "Fanny"],
+      "jungler": ["Lancelot", "Yi Sun-shin", "Fredrinn", "Lukas", "Fanny"],
       "midlane": ["Cecilion", "Lunox", "Aurora", "Cyclops"],
-      "goldlane": ["Moskov", "Wanwan", "Bruno", "Harith", "Irithel"],
-      "xplane": ["Masha", "Ruby", "Phoveus", "Zilong", "Arlott"]
+      "goldlane": ["Moskov", "Wanwan", "Claude", "Harith", "Irithel"],
+      "xplane": ["Masha", "Ruby", "Phoveus", "Kalea", "Arlott"]
     }
   },
   {
@@ -916,7 +916,7 @@
       "jungler": ["Lancelot", "Benedetta", "Joy", "Ling", "Helcurt"],
       "midlane": ["Novaria", "Zhuxin", "Kadita", "Kimmy", "Pharsa"],
       "goldlane": ["Wanwan", "Irithel", "Moskov", "Kimmy", "Harith"],
-      "xplane": ["Khaleed", "Badang", "Uranus", "Khaleed", "Gloo"]
+      "xplane": ["Kalea", "Badang", "Uranus", "Gatotkaca", "Gloo"]
     }
   },
   {
