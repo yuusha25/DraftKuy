@@ -80,6 +80,9 @@ class MainActivity : AppCompatActivity() {
     private fun showTutorial() {
         val prefs = getSharedPreferences("app_prefs", MODE_PRIVATE)
         if (!prefs.getBoolean("tutorial_shown", false)) {
+            val prefs = getSharedPreferences("user_data", MODE_PRIVATE)
+            prefs.edit().putInt("coins", 7).apply()
+            tvCoinAmount.text=getCoinsDisplay()
             findViewById<View>(R.id.ivCoin).post {
                 TapTargetSequence(this)
                     .targets(
@@ -151,7 +154,6 @@ class MainActivity : AppCompatActivity() {
                     .listener(object : TapTargetSequence.Listener {
                         override fun onSequenceFinish() {
                             prefs.edit().putBoolean("tutorial_shown", true).apply()
-                            checkDailyReward()
                         }
 
                         override fun onSequenceStep(lastTarget: TapTarget?, targetClicked: Boolean) {}
