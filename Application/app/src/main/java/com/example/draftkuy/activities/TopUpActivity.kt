@@ -95,6 +95,13 @@ class TopUpActivity : AppCompatActivity() {
         }
     }
 
+    private fun getCoinsDisplay(): String {
+        val prefs = getSharedPreferences("user_data", MODE_PRIVATE)
+        val isSubscribed = prefs.getBoolean("is_subscribed", false)
+
+        return if (isSubscribed) "∞" else getCoins().toString()
+    }
+
     private fun getCoins(): Int {
         val prefs = getSharedPreferences("user_data", MODE_PRIVATE)
         return prefs.getInt("coins", 0)
@@ -109,7 +116,7 @@ class TopUpActivity : AppCompatActivity() {
 
     private fun updateCoinUI() {
         val txtCoin = findViewById<TextView>(R.id.txtCoin)
-        txtCoin.text = "${getCoins()}"
+        txtCoin.text = getCoinsDisplay()
     }
 
 

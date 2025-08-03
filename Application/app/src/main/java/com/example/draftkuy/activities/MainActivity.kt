@@ -61,9 +61,15 @@ class MainActivity : AppCompatActivity() {
 
     override fun onResume() {
         super.onResume()
-        tvCoinAmount.text = getCoins().toString()
+        tvCoinAmount.text = getCoinsDisplay()
     }
 
+    private fun getCoinsDisplay(): String {
+        val prefs = getSharedPreferences("user_data", MODE_PRIVATE)
+        val isSubscribed = prefs.getBoolean("is_subscribed", false)
+
+        return if (isSubscribed) "∞" else getCoins().toString()
+    }
 
     private fun getCoins(): Int {
         val prefs = getSharedPreferences("user_data", MODE_PRIVATE)
@@ -77,7 +83,7 @@ class MainActivity : AppCompatActivity() {
         tvCoinAmount = findViewById(R.id.txtCoin)
         ivHero = findViewById(R.id.ivHero)
 
-        tvCoinAmount.text = getCoins().toString()
+        tvCoinAmount.text = getCoinsDisplay()
     }
 
 
@@ -170,7 +176,18 @@ class MainActivity : AppCompatActivity() {
         input.setOnItemClickListener { _, _, position, _ ->
             val selectedHero = adapter.getItem(position)
             searchDialog?.dismiss()
+
             if (selectedHero != null) {
+                val prefs = getSharedPreferences("user_data", MODE_PRIVATE)
+                val currentCoins = getCoins()
+
+                if (currentCoins == 0) {
+                    Toast.makeText(this, "Anda tidak memiliki koin.", Toast.LENGTH_SHORT).show()
+                    return@setOnItemClickListener // hentikan eksekusi lebih lanjut
+                }
+
+                prefs.edit().putInt("coins", currentCoins - 1).apply()
+                tvCoinAmount.text = getCoins().toString()
                 searchHero(selectedHero)
             }
         }
