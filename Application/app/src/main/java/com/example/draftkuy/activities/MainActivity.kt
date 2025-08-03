@@ -35,12 +35,12 @@ class MainActivity : AppCompatActivity() {
 
     override fun onCreate(savedInstanceState: Bundle?) {
         // [TAMBAHKAN INI] - Pengecekan intro sebelum lanjut
-        val introPrefs = getSharedPreferences("app_prefs", MODE_PRIVATE)
-        if (!introPrefs.getBoolean("intro_shown", false)) {
-            startActivity(Intent(this, IntroActivity::class.java))
-            finish()
-            return  // Keluar dari onCreate jika intro perlu ditampilkan
-        }
+//        val introPrefs = getSharedPreferences("app_prefs", MODE_PRIVATE)
+//        if (!introPrefs.getBoolean("intro_shown", false)) {
+//            startActivity(Intent(this, IntroActivity::class.java))
+//            finish()
+//            return  // Keluar dari onCreate jika intro perlu ditampilkan
+//        }
 
         // [KODE YANG SUDAH ADA] - Lanjut ke MainActivity
         requestedOrientation = ActivityInfo.SCREEN_ORIENTATION_PORTRAIT
