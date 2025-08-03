@@ -1,6 +1,7 @@
 plugins {
     alias(libs.plugins.android.application)
     alias(libs.plugins.kotlin.android)
+    id("com.google.gms.google-services")
 }
 
 android {
@@ -47,6 +48,8 @@ dependencies {
     implementation("com.google.android.gms:play-services-ads:24.5.0")
     implementation("androidx.core:core-ktx:1.12.0")
     implementation("com.getkeepsafe.taptargetview:taptargetview:1.13.3")
+    implementation("com.google.firebase:firebase-database:22.0.0")
+
 
     testImplementation(libs.junit)
     androidTestImplementation(libs.androidx.junit)

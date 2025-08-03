@@ -1,5 +1,6 @@
 package com.example.draftkuy.activities
 
+import android.app.Dialog
 import android.graphics.Paint
 import android.os.Bundle
 import android.util.Log
@@ -18,11 +19,14 @@ import com.example.draftkuy.models.Hero
 import com.example.draftkuy.utils.DataHelper
 import com.example.draftkuy.utils.JsonMeta
 import android.content.Intent
-
 import com.getkeepsafe.taptargetview.TapTarget
 import com.getkeepsafe.taptargetview.TapTargetSequence
+import com.google.firebase.FirebaseApp
+import com.google.firebase.database.FirebaseDatabase
+import com.google.firebase.database.ServerValue
+import java.text.SimpleDateFormat
+import java.util.*
 
-import com.example.draftkuy.activities.TopUpActivity
 
 
 class MainActivity : AppCompatActivity() {
@@ -36,6 +40,8 @@ class MainActivity : AppCompatActivity() {
     private var searchDialog: AlertDialog? = null
     private var currentHero: Hero? = null
     private var selectedRoleView: TextView? = null
+    private val COINS_KEY = "coins"
+    private val LAST_CLAIM_DATE_KEY = "last_claim_date"
 
     override fun onCreate(savedInstanceState: Bundle?) {
         // [TAMBAHKAN INI] - Pengecekan intro sebelum lanjut
@@ -51,11 +57,16 @@ class MainActivity : AppCompatActivity() {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_main)
 
+        //inisialiasai fire base
+        FirebaseApp.initializeApp(this)
+
+
         val btnTopUp = findViewById<ImageButton>(R.id.btnTopUp)
         btnTopUp.setOnClickListener {
             val intent = Intent(this, TopUpActivity::class.java)
             startActivity(intent)
         }
+
         initViews()
         setupRecyclerView()
         setupClickListeners()
@@ -140,6 +151,7 @@ class MainActivity : AppCompatActivity() {
                     .listener(object : TapTargetSequence.Listener {
                         override fun onSequenceFinish() {
                             prefs.edit().putBoolean("tutorial_shown", true).apply()
+                            checkDailyReward()
                         }
 
                         override fun onSequenceStep(lastTarget: TapTarget?, targetClicked: Boolean) {}
@@ -147,6 +159,11 @@ class MainActivity : AppCompatActivity() {
                     })
                     .start()
             }
+
+
+        }
+        else {
+            checkDailyReward()
         }
     }
 
@@ -270,6 +287,7 @@ class MainActivity : AppCompatActivity() {
 
             if (selectedHero != null) {
                 val prefs = getSharedPreferences("user_data", MODE_PRIVATE)
+                val isSubscribed = prefs.getBoolean("is_subscribed", false)
                 val currentCoins = getCoins()
 
                 if (currentCoins == 0) {
@@ -277,7 +295,10 @@ class MainActivity : AppCompatActivity() {
                     return@setOnItemClickListener // hentikan eksekusi lebih lanjut
                 }
 
-                prefs.edit().putInt("coins", currentCoins - 1).apply()
+                if(!isSubscribed){
+                    prefs.edit().putInt("coins", currentCoins - 1).apply()
+                }
+
                 tvCoinAmount.text = getCoins().toString()
                 searchHero(selectedHero)
             }
@@ -375,6 +396,73 @@ class MainActivity : AppCompatActivity() {
 
         override fun getItemCount() = heroes.size
     }
+
+
+
+    private fun checkDailyReward() {
+        val prefs = getSharedPreferences("user_data", MODE_PRIVATE)
+        val isSubscribed = prefs.getBoolean("is_subscribed", false)
+        if (isSubscribed) return
+
+        val ref = FirebaseDatabase.getInstance("https://drafkuy-31f7e-default-rtdb.asia-southeast1.firebasedatabase.app/")
+            .getReference("server_time")
+        val dummyData = mapOf("timestamp" to ServerValue.TIMESTAMP)
+
+        ref.setValue(dummyData).addOnCompleteListener {
+            ref.child("timestamp").get().addOnSuccessListener { snapshot ->
+                val serverTimestamp = snapshot.value as? Long
+                if (serverTimestamp != null) {
+                    val serverDate = getDateOnly(serverTimestamp)
+                    val lastClaimDate = prefs.getString(LAST_CLAIM_DATE_KEY, "")
+                    Log.d("DailyReward", "Server timestamp: $serverTimestamp")
+                    Log.d("DailyReward", "Last claim date: $lastClaimDate, Server date: $serverDate")
+
+                    if (serverDate != lastClaimDate) {
+                        showCustomClaimDialog(serverDate)
+                    }
+                }
+            }
+        }
+    }
+
+
+    private fun showCustomClaimDialog(currentDate: String) {
+        val dialogView = layoutInflater.inflate(R.layout.daily_coin, null)
+        val dialog = Dialog(this)
+        dialog.setContentView(dialogView)
+        dialog.window?.setBackgroundDrawableResource(android.R.color.transparent)
+        dialog.setCancelable(false)
+
+        val btnClaim = dialogView.findViewById<Button>(R.id.btnClaim)
+        val tvTitle = dialogView.findViewById<TextView>(R.id.tvTitle)
+        val tvMessage = dialogView.findViewById<TextView>(R.id.tvMessage)
+
+        tvTitle.text = "Klaim Koin Harian"
+        tvMessage.text = "Dapatkan 5 koin gratis hari ini!"
+
+        btnClaim.setOnClickListener {
+            val prefs = getSharedPreferences("user_data", MODE_PRIVATE)
+            val currentCoins = prefs.getInt("coins", 0)
+            prefs.edit()
+                .putInt(COINS_KEY, currentCoins + 5)
+                .putString(LAST_CLAIM_DATE_KEY, currentDate)
+                .apply()
+
+            Toast.makeText(this, "5 koin ditambahkan!", Toast.LENGTH_SHORT).show()
+            dialog.dismiss()
+            tvCoinAmount.text = getCoinsDisplay()
+        }
+
+        dialog.show()
+    }
+
+
+    private fun getDateOnly(timestamp: Long): String {
+        val sdf = SimpleDateFormat("yyyy-MM-dd", Locale.getDefault())
+        sdf.timeZone = TimeZone.getTimeZone("UTC")
+        return sdf.format(Date(timestamp))
+    }
+
 
 
 }

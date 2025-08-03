@@ -1,0 +1,29 @@
+{
+  "project_info": {
+    "project_number": "386241257323",
+    "project_id": "draftkuy-c3ba8",
+    "storage_bucket": "draftkuy-c3ba8.firebasestorage.app"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:386241257323:android:f36d675b86c2e71934b62e",
+        "android_client_info": {
+          "package_name": "com.example.draftkuy"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyB_zEiAcCmvcbBX3k5YJzQvGvHz99iNoDc"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
