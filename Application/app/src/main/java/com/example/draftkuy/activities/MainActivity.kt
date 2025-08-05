@@ -316,7 +316,7 @@ class MainActivity : AppCompatActivity() {
     private fun showLoading() {
         if (loadingDialog == null) {
             val view = layoutInflater.inflate(R.layout.dialog_loading, null)
-            loadingDialog = AlertDialog.Builder(this)
+            loadingDialog = AlertDialog.Builder(this, R.style.TransparentDialog)
                 .setView(view)
                 .setCancelable(false)
                 .create()
