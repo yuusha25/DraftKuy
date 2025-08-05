@@ -30,6 +30,7 @@ import com.google.android.gms.common.api.ApiException
 import com.google.android.gms.auth.api.signin.GoogleSignInStatusCodes
 
 
+
 import com.google.firebase.FirebaseApp
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.auth.GoogleAuthProvider
@@ -206,33 +207,73 @@ class MainActivity : AppCompatActivity() {
         signInLauncher.launch(googleSignInClient.signInIntent)
     }
 
+
     private fun firebaseAuthWithGoogle(idToken: String) {
         val credential = GoogleAuthProvider.getCredential(idToken, null)
         FirebaseAuth.getInstance().signInWithCredential(credential)
             .addOnCompleteListener(this) { task ->
                 if (task.isSuccessful) {
-                    sharedPrefs.edit().apply {
-                        putBoolean(IS_LOGGED_IN_KEY, true)
-                        putInt(COINS_KEY, 10) // Give 10 coins after login
-                        apply()
+                    val user = FirebaseAuth.getInstance().currentUser
+                    val userId = user?.uid ?: return@addOnCompleteListener
+                    val userRef = FirebaseDatabase.getInstance("https://draftkuy-3c559-default-rtdb.asia-southeast1.firebasedatabase.app/")
+                        .getReference("users/$userId")
+
+                    userRef.get().addOnSuccessListener { snapshot ->
+                        val editor = sharedPrefs.edit()
+                        editor.putBoolean(IS_LOGGED_IN_KEY, true)
+
+                        if (snapshot.exists()) {
+                            // 🔁 User lama: ambil koin terakhir
+                            val coins = snapshot.child("coins").getValue(Int::class.java) ?: 0
+                            editor.putInt(COINS_KEY, coins)
+                            Toast.makeText(this, "Login berhasil. Sisa koin: $coins", Toast.LENGTH_SHORT).show()
+                        } else {
+                            // 🆕 User baru: beri 10 koin
+                            editor.putInt(COINS_KEY, 10)
+                            Toast.makeText(this, "Login pertama! +10 Koin", Toast.LENGTH_SHORT).show()
+                        }
+
+                        editor.apply()
+
+                        // ✅ Simpan/update data user ke Firebase (coin & last_login)
+                        saveUserDataToFirebase()
+
+                        // 💰 Update UI
+                        tvCoinAmount.text = getCoinsDisplay()
                     }
-                    tvCoinAmount.text = getCoinsDisplay()
-                    Toast.makeText(this, "Login berhasil! +10 Koin", Toast.LENGTH_SHORT).show()
-                    saveUserDataToFirebase()
+                } else {
+                    Toast.makeText(this, "Login gagal", Toast.LENGTH_SHORT).show()
                 }
             }
     }
 
+
+
     private fun saveUserDataToFirebase() {
-        FirebaseAuth.getInstance().currentUser?.uid?.let { userId ->
-            FirebaseDatabase.getInstance().getReference("users/$userId").setValue(
-                mapOf(
-                    "coins" to sharedPrefs.getInt(COINS_KEY, 0),
-                    "last_login" to ServerValue.TIMESTAMP
-                )
-            )
+        val uid = FirebaseAuth.getInstance().currentUser?.uid ?: return
+        val userRef = FirebaseDatabase.getInstance("https://draftkuy-3c559-default-rtdb.asia-southeast1.firebasedatabase.app/").getReference("users/$uid")
+
+        userRef.get().addOnSuccessListener { snapshot ->
+            if (!snapshot.exists()) {
+                // User baru, beri 10 koin
+                userRef.setValue(
+                    mapOf(
+                        "coins" to 10,
+                        "last_login" to ServerValue.TIMESTAMP
+                    )
+                ).addOnSuccessListener {
+                    Log.d("Firebase", "User baru disimpan +10 koin")
+                }
+            } else {
+                // User lama, hanya update waktu login
+                userRef.child("last_login").setValue(ServerValue.TIMESTAMP)
+                Log.d("Firebase", "User lama login, tidak dapat koin")
+            }
+        }.addOnFailureListener {
+            Log.e("Firebase", "Gagal cek data user: ${it.message}")
         }
     }
+
 
     override fun onResume() {
         super.onResume()
@@ -368,6 +409,14 @@ class MainActivity : AppCompatActivity() {
 
                 if(!isSubscribed){
                     prefs.edit().putInt("coins", currentCoins - 1).apply()
+
+// Tambahkan ini: update ke Firebase juga
+                    val uid = FirebaseAuth.getInstance().currentUser?.uid
+                    if (uid != null) {
+                        FirebaseDatabase.getInstance("https://draftkuy-3c559-default-rtdb.asia-southeast1.firebasedatabase.app/").getReference("users/$uid/coins")
+                            .setValue(currentCoins - 1)
+                    }
+
                 }
 
                 tvCoinAmount.text = getCoins().toString()
@@ -496,7 +545,17 @@ class MainActivity : AppCompatActivity() {
         }
     }
 
+    private fun syncCoinsToFirebase() {
+        val uid = FirebaseAuth.getInstance().currentUser?.uid ?: return
+        val coins = getCoins()
 
+        val userRef = FirebaseDatabase
+            .getInstance("https://draftkuy-3c559-default-rtdb.asia-southeast1.firebasedatabase.app/")
+            .getReference("users/$uid")
+
+        userRef.child("coins").setValue(coins)
+        userRef.child("last_login").setValue(ServerValue.TIMESTAMP)
+    }
     private fun showCustomClaimDialog(currentDate: String) {
         val dialogView = layoutInflater.inflate(R.layout.daily_coin, null)
         val dialog = Dialog(this)
@@ -514,15 +573,22 @@ class MainActivity : AppCompatActivity() {
         btnClaim.setOnClickListener {
             val prefs = getSharedPreferences("user_data", MODE_PRIVATE)
             val currentCoins = prefs.getInt("coins", 0)
+            val newCoins = currentCoins + 5
+
             prefs.edit()
-                .putInt(COINS_KEY, currentCoins + 5)
+                .putInt(COINS_KEY, newCoins)
                 .putString(LAST_CLAIM_DATE_KEY, currentDate)
                 .apply()
+
+            // 🔁 Simpan ke Firebase dari sharedPrefs yang sudah diupdate
+            syncCoinsToFirebase()
 
             Toast.makeText(this, "5 koin ditambahkan!", Toast.LENGTH_SHORT).show()
             dialog.dismiss()
             tvCoinAmount.text = getCoinsDisplay()
         }
+
+
 
         dialog.show()
     }

@@ -12,6 +12,10 @@ import com.google.android.gms.ads.rewarded.RewardedAd
 import com.google.android.gms.ads.rewarded.RewardItem
 import com.google.android.gms.ads.rewarded.RewardedAdLoadCallback
 import com.google.android.gms.ads.OnUserEarnedRewardListener
+import com.google.firebase.auth.FirebaseAuth
+import com.google.firebase.database.FirebaseDatabase
+import com.google.firebase.database.ServerValue
+
 
 class TopUpActivity : AppCompatActivity() {
     private var rewardedAd: RewardedAd? = null
@@ -110,9 +114,32 @@ class TopUpActivity : AppCompatActivity() {
     private fun addCoins(amount: Int) {
         val prefs = getSharedPreferences("user_data", MODE_PRIVATE)
         val currentCoins = getCoins()
-        prefs.edit().putInt("coins", currentCoins + amount).apply()
+        val newTotal = currentCoins + amount
+
+        prefs.edit().putInt("coins", newTotal).apply()
         updateCoinUI()
+
+        // ✅ Simpan ke Firebase juga
+        val uid = FirebaseAuth.getInstance().currentUser?.uid
+        if (uid != null) {
+            val userRef = FirebaseDatabase.getInstance("https://draftkuy-3c559-default-rtdb.asia-southeast1.firebasedatabase.app/")
+                .getReference("users/$uid")
+            userRef.child("coins").setValue(newTotal)
+        }
+        syncCoinsToFirebase()
     }
+    private fun syncCoinsToFirebase() {
+        val uid = FirebaseAuth.getInstance().currentUser?.uid ?: return
+        val coins = getCoins()
+
+        val userRef = FirebaseDatabase
+            .getInstance("https://draftkuy-3c559-default-rtdb.asia-southeast1.firebasedatabase.app/")
+            .getReference("users/$uid")
+
+        userRef.child("coins").setValue(coins)
+        userRef.child("last_login").setValue(ServerValue.TIMESTAMP)
+    }
+
 
     private fun updateCoinUI() {
         val txtCoin = findViewById<TextView>(R.id.txtCoin)
