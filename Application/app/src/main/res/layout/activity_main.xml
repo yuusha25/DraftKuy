@@ -22,7 +22,6 @@
             android:id="@+id/tvAppTitle"
             android:layout_width="0dp"
             android:layout_height="wrap_content"
-            android:layout_marginBottom="15dp"
             android:text="@string/app_name"
             android:textColor="#fcfffa"
             android:textSize="26sp"
@@ -30,13 +29,13 @@
             android:maxLines="1"
             android:ellipsize="end"
             app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintEnd_toStartOf="@id/layoutCoin"
+            app:layout_constraintEnd_toStartOf="@id/layoutLoginCoin"
             app:layout_constraintTop_toTopOf="parent"
             app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintHorizontal_bias="0" />
 
         <LinearLayout
-            android:id="@+id/layoutCoin"
+            android:id="@+id/layoutLoginCoin"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:orientation="horizontal"
@@ -45,32 +44,52 @@
             app:layout_constraintTop_toTopOf="parent"
             app:layout_constraintBottom_toBottomOf="parent">
 
-            <ImageView
-                android:id="@+id/ivCoin"
-                android:layout_width="35dp"
-                android:layout_height="35dp"
-                android:src="@drawable/coin"
-                android:contentDescription="Coin"
-                android:layout_marginEnd="0dp" />
-
+            <!-- Teks Login -->
             <TextView
-                android:id="@+id/txtCoin"
+                android:id="@+id/tvLogin"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:text="@string/coin_balance"
-                android:textColor="#fcfffa"
+                android:text="Login"
+                android:textColor="#FFFFFF"
                 android:textSize="16sp"
-                android:textStyle="bold"
-                android:layout_marginEnd="4dp" />
+                android:layout_marginEnd="16dp"
+                android:clickable="true"
+                android:focusable="true"/>
 
-            <ImageButton
-                android:id="@+id/btnTopUp"
-                android:layout_width="22dp"
-                android:layout_height="22dp"
-                android:background="@android:color/transparent"
-                android:src="@android:drawable/ic_input_add"
-                android:contentDescription="Top Up"
-                app:tint="#FFD700"/>
+            <!-- Bagian Coin -->
+            <LinearLayout
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:orientation="horizontal"
+                android:gravity="center_vertical">
+
+                <ImageView
+                    android:id="@+id/ivCoin"
+                    android:layout_width="35dp"
+                    android:layout_height="35dp"
+                    android:src="@drawable/coin"
+                    android:contentDescription="Coin"
+                    android:layout_marginEnd="0dp" />
+
+                <TextView
+                    android:id="@+id/txtCoin"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="@string/coin_balance"
+                    android:textColor="#fcfffa"
+                    android:textSize="16sp"
+                    android:textStyle="bold"
+                    android:layout_marginEnd="4dp" />
+
+                <ImageButton
+                    android:id="@+id/btnTopUp"
+                    android:layout_width="22dp"
+                    android:layout_height="22dp"
+                    android:background="@android:color/transparent"
+                    android:src="@android:drawable/ic_input_add"
+                    android:contentDescription="Top Up"
+                    app:tint="#FFD700"/>
+            </LinearLayout>
         </LinearLayout>
     </androidx.constraintlayout.widget.ConstraintLayout>
 

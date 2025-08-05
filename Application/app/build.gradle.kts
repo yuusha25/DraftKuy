@@ -50,6 +50,14 @@ dependencies {
     implementation("com.getkeepsafe.taptargetview:taptargetview:1.13.3")
     implementation("com.google.firebase:firebase-database:22.0.0")
 
+    // Firebase BoM dan library
+    implementation(platform("com.google.firebase:firebase-bom:33.0.0"))  // Updated version
+    implementation("com.google.firebase:firebase-analytics")
+    implementation("com.google.firebase:firebase-auth-ktx")
+    implementation("com.google.android.gms:play-services-auth:20.7.0")
+
+    implementation("com.google.firebase:firebase-database-ktx")  // Add this
+
 
     testImplementation(libs.junit)
     androidTestImplementation(libs.androidx.junit)

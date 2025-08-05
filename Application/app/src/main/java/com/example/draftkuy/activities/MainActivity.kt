@@ -1,14 +1,16 @@
 package com.example.draftkuy.activities
 
 import android.app.Dialog
+import android.content.Intent
+import android.content.SharedPreferences
 import android.graphics.Paint
 import android.os.Bundle
 import android.util.Log
-import android.content.pm.ActivityInfo
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.widget.*
+import androidx.activity.result.contract.ActivityResultContracts
 import androidx.appcompat.app.AlertDialog
 import androidx.appcompat.app.AppCompatActivity
 import androidx.core.content.ContextCompat
@@ -18,16 +20,23 @@ import com.example.draftkuy.R
 import com.example.draftkuy.models.Hero
 import com.example.draftkuy.utils.DataHelper
 import com.example.draftkuy.utils.JsonMeta
-import android.content.Intent
 import com.getkeepsafe.taptargetview.TapTarget
 import com.getkeepsafe.taptargetview.TapTargetSequence
+import com.google.android.gms.auth.api.signin.GoogleSignIn
+import com.google.android.gms.auth.api.signin.GoogleSignInClient
+import com.google.android.gms.auth.api.signin.GoogleSignInOptions
+
+import com.google.android.gms.common.api.ApiException
+import com.google.android.gms.auth.api.signin.GoogleSignInStatusCodes
+
+
 import com.google.firebase.FirebaseApp
+import com.google.firebase.auth.FirebaseAuth
+import com.google.firebase.auth.GoogleAuthProvider
 import com.google.firebase.database.FirebaseDatabase
 import com.google.firebase.database.ServerValue
 import java.text.SimpleDateFormat
 import java.util.*
-
-
 
 class MainActivity : AppCompatActivity() {
 
@@ -35,36 +44,49 @@ class MainActivity : AppCompatActivity() {
     private lateinit var rvHeroes: RecyclerView
     private lateinit var roleBar: ViewGroup
     private lateinit var tvCoinAmount: TextView
-    private lateinit var ivHero: ImageView // TAMBAHKAN INI
+    private lateinit var ivHero: ImageView
     private lateinit var allHeroNames: List<String>
+    private lateinit var sharedPrefs: SharedPreferences
+    private lateinit var googleSignInClient: GoogleSignInClient
     private var searchDialog: AlertDialog? = null
     private var currentHero: Hero? = null
     private var selectedRoleView: TextView? = null
+
     private val COINS_KEY = "coins"
     private val LAST_CLAIM_DATE_KEY = "last_claim_date"
+    private val IS_LOGGED_IN_KEY = "is_logged_in"
+    private val TUTORIAL_SHOWN_KEY = "tutorial_shown"
+
+    // Tambahkan di sini:
+    private val signInLauncher = registerForActivityResult(
+        ActivityResultContracts.StartActivityForResult()
+    ) { result ->
+        try {
+            val account = GoogleSignIn.getSignedInAccountFromIntent(result.data)
+                .getResult(ApiException::class.java)
+            account?.idToken?.let { firebaseAuthWithGoogle(it) }
+        } catch (e: ApiException) {
+            val errorMsg = when (e.statusCode) {
+                GoogleSignInStatusCodes.SIGN_IN_CANCELLED -> "Login dibatalkan"
+                GoogleSignInStatusCodes.SIGN_IN_FAILED -> "Gagal login. Coba lagi"
+                else -> "Error: ${e.message}"
+            }
+            Toast.makeText(this, errorMsg, Toast.LENGTH_SHORT).show()
+        }
+    }
 
     override fun onCreate(savedInstanceState: Bundle?) {
-        // [TAMBAHKAN INI] - Pengecekan intro sebelum lanjut
-//        val introPrefs = getSharedPreferences("app_prefs", MODE_PRIVATE)
-//        if (!introPrefs.getBoolean("intro_shown", false)) {
-//            startActivity(Intent(this, IntroActivity::class.java))
-//            finish()
-//            return  // Keluar dari onCreate jika intro perlu ditampilkan
-//        }
-
-        // [KODE YANG SUDAH ADA] - Lanjut ke MainActivity
-        requestedOrientation = ActivityInfo.SCREEN_ORIENTATION_PORTRAIT
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_main)
 
-        //inisialiasai fire base
+        // Initialize Firebase
         FirebaseApp.initializeApp(this)
-
+        sharedPrefs = getSharedPreferences("user_data", MODE_PRIVATE)
+        setupGoogleSignIn()
 
         val btnTopUp = findViewById<ImageButton>(R.id.btnTopUp)
         btnTopUp.setOnClickListener {
-            val intent = Intent(this, TopUpActivity::class.java)
-            startActivity(intent)
+            startActivity(Intent(this, TopUpActivity::class.java))
         }
 
         initViews()
@@ -74,98 +96,141 @@ class MainActivity : AppCompatActivity() {
         supportActionBar?.hide()
 
         showTutorial()
+    }
 
+    private fun setupGoogleSignIn() {
+        val gso = GoogleSignInOptions.Builder(GoogleSignInOptions.DEFAULT_SIGN_IN)
+            .requestIdToken(getString(R.string.default_web_client_id))
+            .requestEmail()
+            .build()
+        googleSignInClient = GoogleSignIn.getClient(this, gso)
     }
 
     private fun showTutorial() {
-        val prefs = getSharedPreferences("app_prefs", MODE_PRIVATE)
-        if (!prefs.getBoolean("tutorial_shown", false)) {
-            val prefs = getSharedPreferences("user_data", MODE_PRIVATE)
-            prefs.edit().putInt("coins", 7).apply()
-            tvCoinAmount.text=getCoinsDisplay()
-            findViewById<View>(R.id.ivCoin).post {
-                TapTargetSequence(this)
-                    .targets(
-                        // Target 1: Icon Koin
-                        TapTarget.forView(
-                            findViewById(R.id.ivCoin),
-                            "Koin Pencarian",
-                            "Setiap pencarian hero akan mengurangi 1 koin Anda"
-                        )
-                            .outerCircleColor(R.color.orange)
-                            .targetCircleColor(R.color.transparent) // Menggunakan resource warna
-                            .titleTextSize(18)
-                            .descriptionTextSize(14)
-                            .textColor(R.color.white) // Menggunakan resource warna
-                            .dimColor(R.color.black)
-                            .drawShadow(true)
-                            .cancelable(false)
-                            .transparentTarget(true)
-                            .targetRadius(35),
-
-                        // Target 2: Tombol Search
-                        TapTarget.forView(
-                            findViewById(R.id.btnSearch),
-                            "Pencarian Hero",
-                            "Gunakan tombol ini untuk mencari hero yang ingin Anda counter"
-                        )
-                            .outerCircleColor(R.color.blue)
-                            .targetCircleColor(R.color.transparent)
-                            .titleTextSize(18)
-                            .descriptionTextSize(14)
-                            .textColor(R.color.white)
-                            .dimColor(R.color.black)
-                            .drawShadow(true)
-                            .cancelable(false)
-                            .transparentTarget(true),
-
-                        // Target 3: Nama Hero
-                        TapTarget.forView(
-                            findViewById(R.id.ivHero),
-                            "Hero Target",
-                            "Nama hero yang Anda pilih akan muncul di sini"
-                        )
-                            .outerCircleColor(R.color.purple_500)
-                            .targetCircleColor(R.color.transparent)
-                            .titleTextSize(18)
-                            .descriptionTextSize(14)
-                            .textColor(R.color.white)
-                            .dimColor(R.color.black)
-                            .drawShadow(true)
-                            .cancelable(false)
-                            .transparentTarget(true),
-
-                        // Target 4: Daftar Rekomendasi
-                        TapTarget.forView(
-                            findViewById(R.id.rvHeroes),
-                            "Rekomendasi Hero",
-                            "Daftar hero terbaik untuk counter akan muncul di sini"
-                        )
-                            .outerCircleColor(R.color.teal_700)
-                            .targetCircleColor(R.color.transparent)
-                            .titleTextSize(18)
-                            .descriptionTextSize(14)
-                            .textColor(R.color.white)
-                            .dimColor(R.color.black)
-                            .drawShadow(true)
-                            .cancelable(false)
-                            .transparentTarget(true)
-                    )
-                    .listener(object : TapTargetSequence.Listener {
-                        override fun onSequenceFinish() {
-                            prefs.edit().putBoolean("tutorial_shown", true).apply()
-                        }
-
-                        override fun onSequenceStep(lastTarget: TapTarget?, targetClicked: Boolean) {}
-                        override fun onSequenceCanceled(lastTarget: TapTarget?) {}
-                    })
-                    .start()
+        val appPrefs = getSharedPreferences("app_prefs", MODE_PRIVATE)
+        if (!appPrefs.getBoolean(TUTORIAL_SHOWN_KEY, false)) {
+            sharedPrefs.edit().apply {
+                putInt(COINS_KEY, 3) // Changed from 7 to 3 coins
+                apply()
             }
+            tvCoinAmount.text = getCoinsDisplay()
 
-
-        }
-        else {
+            findViewById<View>(R.id.ivCoin).post {
+                TapTargetSequence(this).targets(
+                    TapTarget.forView(
+                        findViewById(R.id.ivCoin),
+                        "Koin Pencarian",
+                        "Setiap pencarian hero akan mengurangi 1 koin Anda"
+                    ).apply {
+                        outerCircleColor(R.color.orange)
+                        targetCircleColor(R.color.transparent)
+                        titleTextSize(18)
+                        descriptionTextSize(14)
+                        textColor(R.color.white)
+                        dimColor(R.color.black)
+                        drawShadow(true)
+                        cancelable(false)
+                        transparentTarget(true)
+                        targetRadius(35)
+                    },
+                    TapTarget.forView(
+                        findViewById(R.id.btnSearch),
+                        "Pencarian Hero",
+                        "Gunakan tombol ini untuk mencari hero yang ingin Anda counter"
+                    ).apply {
+                        outerCircleColor(R.color.blue)
+                        targetCircleColor(R.color.transparent)
+                        titleTextSize(18)
+                        descriptionTextSize(14)
+                        textColor(R.color.white)
+                        dimColor(R.color.black)
+                        drawShadow(true)
+                        cancelable(false)
+                        transparentTarget(true)
+                    },
+                    TapTarget.forView(
+                        findViewById(R.id.ivHero),
+                        "Hero Target",
+                        "Nama hero yang Anda pilih akan muncul di sini"
+                    ).apply {
+                        outerCircleColor(R.color.purple_500)
+                        targetCircleColor(R.color.transparent)
+                        titleTextSize(18)
+                        descriptionTextSize(14)
+                        textColor(R.color.white)
+                        dimColor(R.color.black)
+                        drawShadow(true)
+                        cancelable(false)
+                        transparentTarget(true)
+                    },
+                    TapTarget.forView(
+                        findViewById(R.id.rvHeroes),
+                        "Rekomendasi Hero",
+                        "Daftar hero terbaik untuk counter akan muncul di sini"
+                    ).apply {
+                        outerCircleColor(R.color.teal_700)
+                        targetCircleColor(R.color.transparent)
+                        titleTextSize(18)
+                        descriptionTextSize(14)
+                        textColor(R.color.white)
+                        dimColor(R.color.black)
+                        drawShadow(true)
+                        cancelable(false)
+                        transparentTarget(true)
+                    }
+                ).listener(object : TapTargetSequence.Listener {
+                    override fun onSequenceFinish() {
+                        appPrefs.edit().putBoolean(TUTORIAL_SHOWN_KEY, true).apply()
+                    }
+                    override fun onSequenceStep(lastTarget: TapTarget?, targetClicked: Boolean) {}
+                    override fun onSequenceCanceled(lastTarget: TapTarget?) {}
+                }).start()
+            }
+        } else {
             checkDailyReward()
+        }
+    }
+
+    private fun checkCoinsAndPromptLogin() {
+        if (sharedPrefs.getInt(COINS_KEY, 0) == 0 && !sharedPrefs.getBoolean(IS_LOGGED_IN_KEY, false)) {
+            AlertDialog.Builder(this)
+                .setTitle("Login untuk Bonus Koin!")
+                .setMessage("Dapatkan 10 koin gratis + reward harian 5 koin dengan login akun Google!")
+                .setPositiveButton("Login") { _, _ -> signInWithGoogle() }
+                .setNegativeButton("Nanti", null)
+                .show()
+        }
+    }
+
+    private fun signInWithGoogle() {
+        signInLauncher.launch(googleSignInClient.signInIntent)
+    }
+
+    private fun firebaseAuthWithGoogle(idToken: String) {
+        val credential = GoogleAuthProvider.getCredential(idToken, null)
+        FirebaseAuth.getInstance().signInWithCredential(credential)
+            .addOnCompleteListener(this) { task ->
+                if (task.isSuccessful) {
+                    sharedPrefs.edit().apply {
+                        putBoolean(IS_LOGGED_IN_KEY, true)
+                        putInt(COINS_KEY, 10) // Give 10 coins after login
+                        apply()
+                    }
+                    tvCoinAmount.text = getCoinsDisplay()
+                    Toast.makeText(this, "Login berhasil! +10 Koin", Toast.LENGTH_SHORT).show()
+                    saveUserDataToFirebase()
+                }
+            }
+    }
+
+    private fun saveUserDataToFirebase() {
+        FirebaseAuth.getInstance().currentUser?.uid?.let { userId ->
+            FirebaseDatabase.getInstance().getReference("users/$userId").setValue(
+                mapOf(
+                    "coins" to sharedPrefs.getInt(COINS_KEY, 0),
+                    "last_login" to ServerValue.TIMESTAMP
+                )
+            )
         }
     }
 
@@ -220,7 +285,11 @@ class MainActivity : AppCompatActivity() {
         }
 
         findViewById<View>(R.id.btnSearch).setOnClickListener {
-            showSearchDialog()
+            if (getCoins() == 0 && !sharedPrefs.getBoolean(IS_LOGGED_IN_KEY, false)) {
+                checkCoinsAndPromptLogin() // Prompt login jika koin habis
+            } else {
+                showSearchDialog()
+            }
         }
     }
 

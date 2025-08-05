@@ -23,4 +23,6 @@
     <string name="data_error">Failed to load hero data</string>
     <string name="hero_not_found">Hero not found</string>
     <string name="add_coins">Add coins clicked</string>
+
+    <string name="default_web_client_id">242050913243-ajfpvdsrpmuep1jd8qhrkmu2462s17i8.apps.googleusercontent.com</string>
 </resources>
