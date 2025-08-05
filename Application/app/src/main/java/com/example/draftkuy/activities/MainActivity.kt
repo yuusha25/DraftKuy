@@ -29,6 +29,8 @@ import com.google.android.gms.auth.api.signin.GoogleSignInOptions
 import com.google.android.gms.common.api.ApiException
 import com.google.android.gms.auth.api.signin.GoogleSignInStatusCodes
 
+import android.os.Handler
+import android.os.Looper
 
 
 import com.google.firebase.FirebaseApp
@@ -110,7 +112,6 @@ class MainActivity : AppCompatActivity() {
         tvLogin.text = if (isLoggedIn) "Logout" else "Login"
     }
     private fun handleLoginLogout() {
-
         showLoading()
         val tvLogin = findViewById<TextView>(R.id.tvLogin)
         val user = FirebaseAuth.getInstance().currentUser
@@ -128,13 +129,18 @@ class MainActivity : AppCompatActivity() {
             tvCoinAmount.text = "0"
             tvLogin.text = "Login"
             Toast.makeText(this, "Logout berhasil", Toast.LENGTH_SHORT).show()
-            hideLoading()
+
+            // ⏳ Beri delay agar loading muncul dulu
+            Handler(Looper.getMainLooper()).postDelayed({
+                hideLoading()
+            }, 300)
+
         } else {
-            // Login
-            hideLoading()
+            // Saat login, jangan hide dulu — biar ditutup saat login selesai
             signInWithGoogle()
         }
     }
+
 
     private fun setupGoogleSignIn() {
         val gso = GoogleSignInOptions.Builder(GoogleSignInOptions.DEFAULT_SIGN_IN)
@@ -234,7 +240,10 @@ class MainActivity : AppCompatActivity() {
             AlertDialog.Builder(this)
                 .setTitle("Login untuk Bonus Koin!")
                 .setMessage("Dapatkan 10 koin gratis + reward harian 5 koin dengan login akun Google!")
-                .setPositiveButton("Login") { _, _ -> signInWithGoogle() }
+                .setPositiveButton("Login") { _, _ ->
+                    showLoading() // ⬅️ tambahkan ini biar ada animasi loading
+                    signInWithGoogle()
+                }
                 .setNegativeButton("Nanti", null)
                 .show()
         }
@@ -312,7 +321,10 @@ class MainActivity : AppCompatActivity() {
                 .setCancelable(false)
                 .create()
         }
-        loadingDialog?.show()
+        if (loadingDialog?.isShowing != true) {
+            loadingDialog?.show()
+        }
+
     }
 
     private fun hideLoading() {
@@ -633,6 +645,12 @@ class MainActivity : AppCompatActivity() {
         userRef.child("last_login").setValue(ServerValue.TIMESTAMP)
     }
     private fun showCustomClaimDialog(currentDate: String) {
+        val user = FirebaseAuth.getInstance().currentUser
+        if (user == null) {
+            Toast.makeText(this, "Login dulu untuk klaim koin harian.", Toast.LENGTH_SHORT).show()
+            return
+        }
+
         val dialogView = layoutInflater.inflate(R.layout.daily_coin, null)
         val dialog = Dialog(this)
         dialog.setContentView(dialogView)
@@ -656,7 +674,6 @@ class MainActivity : AppCompatActivity() {
                 .putString(LAST_CLAIM_DATE_KEY, currentDate)
                 .apply()
 
-            // 🔁 Simpan ke Firebase dari sharedPrefs yang sudah diupdate
             syncCoinsToFirebase()
 
             Toast.makeText(this, "5 koin ditambahkan!", Toast.LENGTH_SHORT).show()
@@ -664,10 +681,9 @@ class MainActivity : AppCompatActivity() {
             tvCoinAmount.text = getCoinsDisplay()
         }
 
-
-
         dialog.show()
     }
+
 
 
     private fun getDateOnly(timestamp: Long): String {
