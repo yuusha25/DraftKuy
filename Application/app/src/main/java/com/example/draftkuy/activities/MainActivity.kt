@@ -79,6 +79,12 @@ class MainActivity : AppCompatActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_main)
+        val tvLogin = findViewById<TextView>(R.id.tvLogin)
+        updateLoginText()
+
+        tvLogin.setOnClickListener {
+            handleLoginLogout()
+        }
 
         // Initialize Firebase
         FirebaseApp.initializeApp(this)
@@ -97,6 +103,37 @@ class MainActivity : AppCompatActivity() {
         supportActionBar?.hide()
 
         showTutorial()
+    }
+    private fun updateLoginText() {
+        val tvLogin = findViewById<TextView>(R.id.tvLogin)
+        val isLoggedIn = FirebaseAuth.getInstance().currentUser != null
+        tvLogin.text = if (isLoggedIn) "Logout" else "Login"
+    }
+    private fun handleLoginLogout() {
+
+        showLoading()
+        val tvLogin = findViewById<TextView>(R.id.tvLogin)
+        val user = FirebaseAuth.getInstance().currentUser
+
+        if (user != null) {
+            // Logout
+            FirebaseAuth.getInstance().signOut()
+            googleSignInClient.signOut()
+
+            sharedPrefs.edit()
+                .putBoolean(IS_LOGGED_IN_KEY, false)
+                .putInt(COINS_KEY, 0)
+                .apply()
+
+            tvCoinAmount.text = "0"
+            tvLogin.text = "Login"
+            Toast.makeText(this, "Logout berhasil", Toast.LENGTH_SHORT).show()
+            hideLoading()
+        } else {
+            // Login
+            hideLoading()
+            signInWithGoogle()
+        }
     }
 
     private fun setupGoogleSignIn() {
@@ -209,6 +246,8 @@ class MainActivity : AppCompatActivity() {
 
 
     private fun firebaseAuthWithGoogle(idToken: String) {
+        showLoading()
+
         val credential = GoogleAuthProvider.getCredential(idToken, null)
         FirebaseAuth.getInstance().signInWithCredential(credential)
             .addOnCompleteListener(this) { task ->
@@ -253,12 +292,34 @@ class MainActivity : AppCompatActivity() {
 
                         // 💰 Update UI
                         tvCoinAmount.text = getCoinsDisplay()
+                        updateLoginText()
+                        hideLoading()
+
                     }
                 } else {
+                    hideLoading()
                     Toast.makeText(this, "Login gagal", Toast.LENGTH_SHORT).show()
                 }
             }
     }
+    private var loadingDialog: AlertDialog? = null
+
+    private fun showLoading() {
+        if (loadingDialog == null) {
+            val view = layoutInflater.inflate(R.layout.dialog_loading, null)
+            loadingDialog = AlertDialog.Builder(this)
+                .setView(view)
+                .setCancelable(false)
+                .create()
+        }
+        loadingDialog?.show()
+    }
+
+    private fun hideLoading() {
+        loadingDialog?.dismiss()
+    }
+
+
 
 
 
@@ -292,6 +353,7 @@ class MainActivity : AppCompatActivity() {
     override fun onResume() {
         super.onResume()
         tvCoinAmount.text = getCoinsDisplay()
+        hideLoading()
     }
 
     private fun getCoinsDisplay(): String {
