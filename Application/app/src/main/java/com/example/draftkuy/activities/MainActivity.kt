@@ -223,19 +223,32 @@ class MainActivity : AppCompatActivity() {
                         editor.putBoolean(IS_LOGGED_IN_KEY, true)
 
                         if (snapshot.exists()) {
-                            // 🔁 User lama: ambil koin terakhir
-                            val coins = snapshot.child("coins").getValue(Int::class.java) ?: 0
-                            editor.putInt(COINS_KEY, coins)
-                            Toast.makeText(this, "Login berhasil. Sisa koin: $coins", Toast.LENGTH_SHORT).show()
+                            val coins = snapshot.child("coins").getValue(Int::class.java)
+
+                            if (coins == null || coins < 0 || coins > 99999) {
+                                // 🧹 Data rusak → reset
+                                userRef.setValue(
+                                    mapOf(
+                                        "coins" to 10,
+                                        "last_login" to ServerValue.TIMESTAMP
+                                    )
+                                )
+                                editor.putInt(COINS_KEY, 10)
+                                Toast.makeText(this, "Data rusak. Direset +10 koin", Toast.LENGTH_SHORT).show()
+                            } else {
+                                // 🟢 Data valid
+                                editor.putInt(COINS_KEY, coins)
+                                Toast.makeText(this, "Login berhasil. Sisa koin: $coins", Toast.LENGTH_SHORT).show()
+                            }
                         } else {
-                            // 🆕 User baru: beri 10 koin
+                            // 🆕 User baru
                             editor.putInt(COINS_KEY, 10)
                             Toast.makeText(this, "Login pertama! +10 Koin", Toast.LENGTH_SHORT).show()
                         }
 
                         editor.apply()
 
-                        // ✅ Simpan/update data user ke Firebase (coin & last_login)
+                        // ✅ Simpan/update data user ke Firebase
                         saveUserDataToFirebase()
 
                         // 💰 Update UI
@@ -246,6 +259,7 @@ class MainActivity : AppCompatActivity() {
                 }
             }
     }
+
 
 
 
