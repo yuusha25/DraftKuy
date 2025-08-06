@@ -56,9 +56,11 @@ class MainActivity : AppCompatActivity() {
     private var selectedRoleView: TextView? = null
 
     private val COINS_KEY = "coins"
-    private val LAST_CLAIM_DATE_KEY = "last_claim_date"
+    private val LAST_LOGIN = "last_login"
+    private val LAST_CLAIM_DATE_KEY = "last_claim"
     private val IS_LOGGED_IN_KEY = "is_logged_in"
     private val TUTORIAL_SHOWN_KEY = "tutorial_shown"
+    private val IS_SUBSCRIBED = "is_subscribed"
 
     // Tambahkan di sini:
     private val signInLauncher = registerForActivityResult(
@@ -106,6 +108,19 @@ class MainActivity : AppCompatActivity() {
 
         showTutorial()
     }
+
+    private fun initViews() {
+        tvHeroName = findViewById(R.id.tvHeroName)
+        rvHeroes = findViewById(R.id.rvHeroes)
+        roleBar = findViewById(R.id.roleBar)
+        tvCoinAmount = findViewById(R.id.txtCoin)
+        ivHero = findViewById(R.id.ivHero)
+
+        tvCoinAmount.text = getCoinsDisplay()
+
+    }
+
+
     private fun updateLoginText() {
         val tvLogin = findViewById<TextView>(R.id.tvLogin)
         val isLoggedIn = FirebaseAuth.getInstance().currentUser != null
@@ -150,90 +165,7 @@ class MainActivity : AppCompatActivity() {
         googleSignInClient = GoogleSignIn.getClient(this, gso)
     }
 
-    private fun showTutorial() {
-        val appPrefs = getSharedPreferences("app_prefs", MODE_PRIVATE)
-        if (!appPrefs.getBoolean(TUTORIAL_SHOWN_KEY, false)) {
-            sharedPrefs.edit().apply {
-                putInt(COINS_KEY, 3) // Changed from 7 to 3 coins
-                apply()
-            }
-            tvCoinAmount.text = getCoinsDisplay()
 
-            findViewById<View>(R.id.ivCoin).post {
-                TapTargetSequence(this).targets(
-                    TapTarget.forView(
-                        findViewById(R.id.ivCoin),
-                        "Koin Pencarian",
-                        "Setiap pencarian hero akan mengurangi 1 koin Anda"
-                    ).apply {
-                        outerCircleColor(R.color.orange)
-                        targetCircleColor(R.color.transparent)
-                        titleTextSize(18)
-                        descriptionTextSize(14)
-                        textColor(R.color.white)
-                        dimColor(R.color.black)
-                        drawShadow(true)
-                        cancelable(false)
-                        transparentTarget(true)
-                        targetRadius(35)
-                    },
-                    TapTarget.forView(
-                        findViewById(R.id.btnSearch),
-                        "Pencarian Hero",
-                        "Gunakan tombol ini untuk mencari hero yang ingin Anda counter"
-                    ).apply {
-                        outerCircleColor(R.color.blue)
-                        targetCircleColor(R.color.transparent)
-                        titleTextSize(18)
-                        descriptionTextSize(14)
-                        textColor(R.color.white)
-                        dimColor(R.color.black)
-                        drawShadow(true)
-                        cancelable(false)
-                        transparentTarget(true)
-                    },
-                    TapTarget.forView(
-                        findViewById(R.id.ivHero),
-                        "Hero Target",
-                        "Nama hero yang Anda pilih akan muncul di sini"
-                    ).apply {
-                        outerCircleColor(R.color.purple_500)
-                        targetCircleColor(R.color.transparent)
-                        titleTextSize(18)
-                        descriptionTextSize(14)
-                        textColor(R.color.white)
-                        dimColor(R.color.black)
-                        drawShadow(true)
-                        cancelable(false)
-                        transparentTarget(true)
-                    },
-                    TapTarget.forView(
-                        findViewById(R.id.rvHeroes),
-                        "Rekomendasi Hero",
-                        "Daftar hero terbaik untuk counter akan muncul di sini"
-                    ).apply {
-                        outerCircleColor(R.color.teal_700)
-                        targetCircleColor(R.color.transparent)
-                        titleTextSize(18)
-                        descriptionTextSize(14)
-                        textColor(R.color.white)
-                        dimColor(R.color.black)
-                        drawShadow(true)
-                        cancelable(false)
-                        transparentTarget(true)
-                    }
-                ).listener(object : TapTargetSequence.Listener {
-                    override fun onSequenceFinish() {
-                        appPrefs.edit().putBoolean(TUTORIAL_SHOWN_KEY, true).apply()
-                    }
-                    override fun onSequenceStep(lastTarget: TapTarget?, targetClicked: Boolean) {}
-                    override fun onSequenceCanceled(lastTarget: TapTarget?) {}
-                }).start()
-            }
-        } else {
-            checkDailyReward()
-        }
-    }
 
     private fun checkCoinsAndPromptLogin() {
         if (sharedPrefs.getInt(COINS_KEY, 0) == 0 && !sharedPrefs.getBoolean(IS_LOGGED_IN_KEY, false)) {
@@ -268,17 +200,21 @@ class MainActivity : AppCompatActivity() {
 
                     userRef.get().addOnSuccessListener { snapshot ->
                         val editor = sharedPrefs.edit()
+                        val getDataCoin = sharedPrefs.getInt(COINS_KEY,0)
                         editor.putBoolean(IS_LOGGED_IN_KEY, true)
 
                         if (snapshot.exists()) {
-                            val coins = snapshot.child("coins").getValue(Int::class.java)
+                            val coins = snapshot.child(COINS_KEY).getValue(Int::class.java)
+                            val isSubscribed = snapshot.child(IS_SUBSCRIBED).getValue(Boolean::class.java) ?: false
+                            val lastClaim = snapshot.child(LAST_CLAIM_DATE_KEY).getValue(String::class.java) ?: ""
 
+                            Log.d("DailyReward", "Saved last claim date: $lastClaim")
                             if (coins == null || coins < 0 || coins > 99999) {
                                 // 🧹 Data rusak → reset
                                 userRef.setValue(
                                     mapOf(
                                         "coins" to 10,
-                                        "last_login" to ServerValue.TIMESTAMP
+                                        "last_login" to sharedPrefs.getString(LAST_LOGIN,"")
                                     )
                                 )
                                 editor.putInt(COINS_KEY, 10)
@@ -286,11 +222,17 @@ class MainActivity : AppCompatActivity() {
                             } else {
                                 // 🟢 Data valid
                                 editor.putInt(COINS_KEY, coins)
+                                editor.putBoolean(IS_SUBSCRIBED,isSubscribed)
+                                editor.putString(LAST_CLAIM_DATE_KEY,lastClaim)
+
+
+                                Log.d("DailyReward", "Saved last claim date: $lastClaim")
                                 Toast.makeText(this, "Login berhasil. Sisa koin: $coins", Toast.LENGTH_SHORT).show()
                             }
                         } else {
                             // 🆕 User baru
-                            editor.putInt(COINS_KEY, 10)
+                            val coinbefore = getDataCoin + 10
+                            editor.putInt(COINS_KEY, coinbefore)
                             Toast.makeText(this, "Login pertama! +10 Koin", Toast.LENGTH_SHORT).show()
                         }
 
@@ -332,10 +274,6 @@ class MainActivity : AppCompatActivity() {
     }
 
 
-
-
-
-
     private fun saveUserDataToFirebase() {
         val uid = FirebaseAuth.getInstance().currentUser?.uid ?: return
         val userRef = FirebaseDatabase.getInstance("https://draftkuy-3c559-default-rtdb.asia-southeast1.firebasedatabase.app/").getReference("users/$uid")
@@ -345,15 +283,19 @@ class MainActivity : AppCompatActivity() {
                 // User baru, beri 10 koin
                 userRef.setValue(
                     mapOf(
-                        "coins" to 10,
-                        "last_login" to ServerValue.TIMESTAMP
+                        "coins" to sharedPrefs.getInt(COINS_KEY,0),
+                        "last_login" to ServerValue.TIMESTAMP,
+                        "last_claim" to "",
+                        "is_subscribed" to false
                     )
                 ).addOnSuccessListener {
                     Log.d("Firebase", "User baru disimpan +10 koin")
                 }
+                checkDailyReward()
             } else {
                 // User lama, hanya update waktu login
                 userRef.child("last_login").setValue(ServerValue.TIMESTAMP)
+                checkDailyReward()
                 Log.d("Firebase", "User lama login, tidak dapat koin")
             }
         }.addOnFailureListener {
@@ -369,25 +311,14 @@ class MainActivity : AppCompatActivity() {
     }
 
     private fun getCoinsDisplay(): String {
-        val prefs = getSharedPreferences("user_data", MODE_PRIVATE)
-        val isSubscribed = prefs.getBoolean("is_subscribed", false)
+        val isSubscribed = sharedPrefs.getBoolean(IS_SUBSCRIBED, false)
 
         return if (isSubscribed) "∞" else getCoins().toString()
     }
 
     private fun getCoins(): Int {
-        val prefs = getSharedPreferences("user_data", MODE_PRIVATE)
-        return prefs.getInt("coins", 0)
-    }
-
-    private fun initViews() {
-        tvHeroName = findViewById(R.id.tvHeroName)
-        rvHeroes = findViewById(R.id.rvHeroes)
-        roleBar = findViewById(R.id.roleBar)
-        tvCoinAmount = findViewById(R.id.txtCoin)
-        ivHero = findViewById(R.id.ivHero)
-
-        tvCoinAmount.text = getCoinsDisplay()
+        val coins = sharedPrefs.getInt(COINS_KEY,0)
+        return coins
     }
 
 
@@ -486,24 +417,22 @@ class MainActivity : AppCompatActivity() {
             searchDialog?.dismiss()
 
             if (selectedHero != null) {
-                val prefs = getSharedPreferences("user_data", MODE_PRIVATE)
-                val isSubscribed = prefs.getBoolean("is_subscribed", false)
+                val isSubscribed = sharedPrefs.getBoolean(IS_SUBSCRIBED,false)
                 val currentCoins = getCoins()
 
-                if (currentCoins == 0) {
+                if (currentCoins == 0 && !isSubscribed) {
                     Toast.makeText(this, "Anda tidak memiliki koin.", Toast.LENGTH_SHORT).show()
                     return@setOnItemClickListener // hentikan eksekusi lebih lanjut
                 }
 
                 if(!isSubscribed){
-                    prefs.edit().putInt("coins", currentCoins - 1).apply()
-
-// Tambahkan ini: update ke Firebase juga
+                    sharedPrefs.edit().putInt(COINS_KEY, currentCoins - 1).apply()
                     val uid = FirebaseAuth.getInstance().currentUser?.uid
                     if (uid != null) {
                         FirebaseDatabase.getInstance("https://draftkuy-3c559-default-rtdb.asia-southeast1.firebasedatabase.app/").getReference("users/$uid/coins")
                             .setValue(currentCoins - 1)
                     }
+// Tambahkan ini: update ke Firebase juga
 
                 }
 
@@ -608,12 +537,12 @@ class MainActivity : AppCompatActivity() {
 
 
     private fun checkDailyReward() {
-        val prefs = getSharedPreferences("user_data", MODE_PRIVATE)
-        val isSubscribed = prefs.getBoolean("is_subscribed", false)
+        val uid = FirebaseAuth.getInstance().currentUser?.uid
+        val isSubscribed = sharedPrefs.getBoolean(IS_SUBSCRIBED, false)
         if (isSubscribed) return
 
-        val ref = FirebaseDatabase.getInstance("https://drafkuy-31f7e-default-rtdb.asia-southeast1.firebasedatabase.app/")
-            .getReference("server_time")
+        val ref = FirebaseDatabase.getInstance("https://draftkuy-3c559-default-rtdb.asia-southeast1.firebasedatabase.app/")
+            .getReference("users/$uid/ServerTime")
         val dummyData = mapOf("timestamp" to ServerValue.TIMESTAMP)
 
         ref.setValue(dummyData).addOnCompleteListener {
@@ -621,11 +550,15 @@ class MainActivity : AppCompatActivity() {
                 val serverTimestamp = snapshot.value as? Long
                 if (serverTimestamp != null) {
                     val serverDate = getDateOnly(serverTimestamp)
-                    val lastClaimDate = prefs.getString(LAST_CLAIM_DATE_KEY, "")
+                    val lastClaimDate = sharedPrefs.getString(LAST_CLAIM_DATE_KEY, "")
                     Log.d("DailyReward", "Server timestamp: $serverTimestamp")
                     Log.d("DailyReward", "Last claim date: $lastClaimDate, Server date: $serverDate")
 
-                    if (serverDate != lastClaimDate) {
+                    if(lastClaimDate == ""){
+                        sharedPrefs.edit().putString(LAST_CLAIM_DATE_KEY,serverDate).apply()
+                        syncCoinsToFirebase()
+                    }
+                    else if (serverDate != lastClaimDate) {
                         showCustomClaimDialog(serverDate)
                     }
                 }
@@ -641,9 +574,17 @@ class MainActivity : AppCompatActivity() {
             .getInstance("https://draftkuy-3c559-default-rtdb.asia-southeast1.firebasedatabase.app/")
             .getReference("users/$uid")
 
-        userRef.child("coins").setValue(coins)
-        userRef.child("last_login").setValue(ServerValue.TIMESTAMP)
+        val lastLogin = ServerValue.TIMESTAMP
+        val lastClaim = sharedPrefs.getString(LAST_CLAIM_DATE_KEY,"")
+
+        userRef.child(COINS_KEY).setValue(coins)
+        userRef.child(LAST_LOGIN).setValue(lastLogin)
+        userRef.child(LAST_CLAIM_DATE_KEY).setValue(lastClaim)
+
+        Log.d("DailyReward", "Saved last claim date: $lastClaim")
+
     }
+
     private fun showCustomClaimDialog(currentDate: String) {
         val user = FirebaseAuth.getInstance().currentUser
         if (user == null) {
@@ -665,15 +606,15 @@ class MainActivity : AppCompatActivity() {
         tvMessage.text = "Dapatkan 5 koin gratis hari ini!"
 
         btnClaim.setOnClickListener {
-            val prefs = getSharedPreferences("user_data", MODE_PRIVATE)
-            val currentCoins = prefs.getInt("coins", 0)
+            val currentCoins = sharedPrefs.getInt(COINS_KEY, 0)
             val newCoins = currentCoins + 5
 
-            prefs.edit()
+            sharedPrefs.edit()
                 .putInt(COINS_KEY, newCoins)
                 .putString(LAST_CLAIM_DATE_KEY, currentDate)
                 .apply()
 
+            Log.d("DailyReward", "Saved last claim date: $currentDate")
             syncCoinsToFirebase()
 
             Toast.makeText(this, "5 koin ditambahkan!", Toast.LENGTH_SHORT).show()
@@ -690,6 +631,94 @@ class MainActivity : AppCompatActivity() {
         val sdf = SimpleDateFormat("yyyy-MM-dd", Locale.getDefault())
         sdf.timeZone = TimeZone.getTimeZone("UTC")
         return sdf.format(Date(timestamp))
+    }
+
+
+
+    // TUTORIAL AWAL DOWNLOAD APLIKASI //
+    private fun showTutorial() {
+        val appPrefs = getSharedPreferences("app_prefs", MODE_PRIVATE)
+        if (!appPrefs.getBoolean(TUTORIAL_SHOWN_KEY, false)) {
+            sharedPrefs.edit().apply {
+                putInt(COINS_KEY, 3) // Changed from 7 to 3 coins
+                apply()
+            }
+            tvCoinAmount.text = getCoinsDisplay()
+
+            findViewById<View>(R.id.ivCoin).post {
+                TapTargetSequence(this).targets(
+                    TapTarget.forView(
+                        findViewById(R.id.ivCoin),
+                        "Koin Pencarian",
+                        "Setiap pencarian hero akan mengurangi 1 koin Anda"
+                    ).apply {
+                        outerCircleColor(R.color.orange)
+                        targetCircleColor(R.color.transparent)
+                        titleTextSize(18)
+                        descriptionTextSize(14)
+                        textColor(R.color.white)
+                        dimColor(R.color.black)
+                        drawShadow(true)
+                        cancelable(false)
+                        transparentTarget(true)
+                        targetRadius(35)
+                    },
+                    TapTarget.forView(
+                        findViewById(R.id.btnSearch),
+                        "Pencarian Hero",
+                        "Gunakan tombol ini untuk mencari hero yang ingin Anda counter"
+                    ).apply {
+                        outerCircleColor(R.color.blue)
+                        targetCircleColor(R.color.transparent)
+                        titleTextSize(18)
+                        descriptionTextSize(14)
+                        textColor(R.color.white)
+                        dimColor(R.color.black)
+                        drawShadow(true)
+                        cancelable(false)
+                        transparentTarget(true)
+                    },
+                    TapTarget.forView(
+                        findViewById(R.id.ivHero),
+                        "Hero Target",
+                        "Nama hero yang Anda pilih akan muncul di sini"
+                    ).apply {
+                        outerCircleColor(R.color.purple_500)
+                        targetCircleColor(R.color.transparent)
+                        titleTextSize(18)
+                        descriptionTextSize(14)
+                        textColor(R.color.white)
+                        dimColor(R.color.black)
+                        drawShadow(true)
+                        cancelable(false)
+                        transparentTarget(true)
+                    },
+                    TapTarget.forView(
+                        findViewById(R.id.rvHeroes),
+                        "Rekomendasi Hero",
+                        "Daftar hero terbaik untuk counter akan muncul di sini"
+                    ).apply {
+                        outerCircleColor(R.color.teal_700)
+                        targetCircleColor(R.color.transparent)
+                        titleTextSize(18)
+                        descriptionTextSize(14)
+                        textColor(R.color.white)
+                        dimColor(R.color.black)
+                        drawShadow(true)
+                        cancelable(false)
+                        transparentTarget(true)
+                    }
+                ).listener(object : TapTargetSequence.Listener {
+                    override fun onSequenceFinish() {
+                        appPrefs.edit().putBoolean(TUTORIAL_SHOWN_KEY, true).apply()
+                    }
+                    override fun onSequenceStep(lastTarget: TapTarget?, targetClicked: Boolean) {}
+                    override fun onSequenceCanceled(lastTarget: TapTarget?) {}
+                }).start()
+            }
+        } else {
+            checkDailyReward()
+        }
     }
 
 
