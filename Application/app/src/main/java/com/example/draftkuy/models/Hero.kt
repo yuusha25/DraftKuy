@@ -1,4 +1,4 @@
-package com.example.draftkuy.models
+package com.notherix.draftkuy.models
 
 data class Hero(
     val name: String,

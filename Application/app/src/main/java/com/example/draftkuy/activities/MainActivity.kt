@@ -1,4 +1,4 @@
-package com.example.draftkuy.activities
+package com.notherix.draftkuy.activities
 
 import android.app.Dialog
 import android.content.Intent
@@ -16,10 +16,10 @@ import androidx.appcompat.app.AppCompatActivity
 import androidx.core.content.ContextCompat
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
-import com.example.draftkuy.R
-import com.example.draftkuy.models.Hero
-import com.example.draftkuy.utils.DataHelper
-import com.example.draftkuy.utils.JsonMeta
+import com.notherix.draftkuy.R
+import com.notherix.draftkuy.models.Hero
+import com.notherix.draftkuy.utils.DataHelper
+import com.notherix.draftkuy.utils.JsonMeta
 import com.getkeepsafe.taptargetview.TapTarget
 import com.getkeepsafe.taptargetview.TapTargetSequence
 import com.google.android.gms.auth.api.signin.GoogleSignIn

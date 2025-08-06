@@ -5,11 +5,11 @@ plugins {
 }
 
 android {
-    namespace = "com.example.draftkuy"
+    namespace = "com.notherix.draftkuy"
     compileSdk = 35
 
     defaultConfig {
-        applicationId = "com.example.draftkuy"
+        applicationId = "com.notherix.draftkuy"
         minSdk = 23
         targetSdk = 35
         versionCode = 1

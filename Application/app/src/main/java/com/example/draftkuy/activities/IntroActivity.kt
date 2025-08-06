@@ -1,10 +1,10 @@
-package com.example.draftkuy.activities
+package com.notherix.draftkuy.activities
 
 import android.content.Intent
 import android.content.SharedPreferences
 import android.os.Bundle
 import androidx.appcompat.app.AppCompatActivity
-import com.example.draftkuy.databinding.ActivityIntroBinding
+import com.notherix.draftkuy.databinding.ActivityIntroBinding
 
 class IntroActivity : AppCompatActivity() {
     private lateinit var binding: ActivityIntroBinding

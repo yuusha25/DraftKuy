@@ -1,9 +1,9 @@
-package com.example.draftkuy.utils
+package com.notherix.draftkuy.utils
 
 import android.content.Context
 import android.util.Log
-import com.example.draftkuy.R
-import com.example.draftkuy.models.Hero
+import com.notherix.draftkuy.R
+import com.notherix.draftkuy.models.Hero
 import com.google.gson.Gson
 import com.google.gson.reflect.TypeToken
 
