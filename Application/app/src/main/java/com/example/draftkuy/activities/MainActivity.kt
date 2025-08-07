@@ -61,6 +61,7 @@ class MainActivity : AppCompatActivity() {
     private val IS_LOGGED_IN_KEY = "is_logged_in"
     private val TUTORIAL_SHOWN_KEY = "tutorial_shown"
     private val IS_SUBSCRIBED = "is_subscribed"
+    private val TIME_ADS = "time_ads"
 
     // Tambahkan di sini:
     private val signInLauncher = registerForActivityResult(
@@ -119,6 +120,8 @@ class MainActivity : AppCompatActivity() {
         tvCoinAmount.text = getCoinsDisplay()
 
     }
+
+
 
 
     private fun updateLoginText() {
@@ -675,7 +678,7 @@ class MainActivity : AppCompatActivity() {
         val appPrefs = getSharedPreferences("app_prefs", MODE_PRIVATE)
         if (!appPrefs.getBoolean(TUTORIAL_SHOWN_KEY, false)) {
             sharedPrefs.edit().apply {
-                putInt(COINS_KEY, 3) // Changed from 7 to 3 coins
+                putInt(COINS_KEY, 1) // Changed from 7 to 3 coins
                 apply()
             }
             tvCoinAmount.text = getCoinsDisplay()

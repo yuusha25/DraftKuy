@@ -1,11 +1,15 @@
 package com.notherix.draftkuy.activities
 
+import android.content.res.ColorStateList
+import android.graphics.Color
 import android.os.Bundle
 import android.util.Log
 import android.widget.Button
 import android.widget.TextView
 import android.widget.Toast
+import androidx.appcompat.app.AlertDialog
 import androidx.appcompat.app.AppCompatActivity
+import androidx.core.content.ContextCompat
 import com.notherix.draftkuy.R
 import com.google.android.gms.ads.*
 import com.google.android.gms.ads.rewarded.RewardedAd
@@ -15,9 +19,12 @@ import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.database.FirebaseDatabase
 import com.google.firebase.database.ServerValue
 import com.android.billingclient.api.*
+import com.google.firebase.database.DatabaseError
 import java.util.*
 import java.text.DateFormat
 import java.util.concurrent.TimeUnit
+import com.google.firebase.database.DataSnapshot
+import com.google.firebase.database.ValueEventListener
 
 class TopUpActivity : AppCompatActivity(), PurchasesUpdatedListener {
 
@@ -36,7 +43,7 @@ class TopUpActivity : AppCompatActivity(), PurchasesUpdatedListener {
         MobileAds.initialize(this) {}
 
         findViewById<Button>(R.id.btnBack).setOnClickListener { finish() }
-        findViewById<Button>(R.id.btnAds).setOnClickListener { showRewardedAd() }
+        findViewById<Button>(R.id.btnAds).setOnClickListener { checkAdsAvailabilityAndShow() }
         findViewById<Button>(R.id.btnTopup20K).setOnClickListener { launchPurchaseFlow() }
 
         checkSubscriptionStatus()
@@ -44,6 +51,87 @@ class TopUpActivity : AppCompatActivity(), PurchasesUpdatedListener {
         loadRewardedAd()
         setupBillingClient()
     }
+
+
+    private fun checkAdsAvailabilityAndShow() {
+        val btnAds = findViewById<Button>(R.id.btnAds)
+        val user = FirebaseAuth.getInstance().currentUser
+
+        if (user == null) {
+            // Belum login → nonaktifkan tombol dan ubah warna & teks
+            btnAds.isEnabled = true
+            btnAds.setBackgroundTintList(ColorStateList.valueOf(Color.parseColor("#BDBDBD")))
+            btnAds.text = "Login untuk lihat iklan"
+
+            AlertDialog.Builder(this)
+                .setTitle("Login Diperlukan")
+                .setMessage("Silakan login terlebih dahulu untuk dapat melihat iklan dan mendapatkan koin gratis.")
+                .setPositiveButton("OK") { dialog, _ ->
+                    dialog.dismiss() // Menutup dialog saat tombol OK ditekan
+                }
+                .show()
+            return
+        }
+
+        val prefs = getSharedPreferences("user_data", MODE_PRIVATE)
+        val isSubscribed = prefs.getBoolean("is_subscribed", false)
+        val uid = user.uid
+
+        if (isSubscribed) return
+
+        val userRef = FirebaseDatabase
+            .getInstance("https://draftkuy-3c559-default-rtdb.asia-southeast1.firebasedatabase.app/")
+            .getReference("users/$uid")
+
+        userRef.child("time_ads").get().addOnSuccessListener { snapshot ->
+            val lastAdTime = snapshot.getValue(Long::class.java) ?: 0L
+
+            FirebaseDatabase.getInstance()
+                .getReference(".info/serverTimeOffset")
+                .addListenerForSingleValueEvent(object : ValueEventListener {
+                    override fun onDataChange(offsetSnapshot: DataSnapshot) {
+                        val offset = offsetSnapshot.getValue(Long::class.java) ?: 0L
+                        val serverNow = System.currentTimeMillis() + offset
+
+                        val elapsedSeconds = (serverNow - lastAdTime) / 1000
+                        val remaining = 1200 - elapsedSeconds // sisa waktu dalam detik
+
+                        if (remaining <= 0) {
+                            // Iklan bisa diklik
+                            btnAds.isEnabled = true
+                            showRewardedAd {
+                                // Update time_ads setelah iklan ditonton
+                                userRef.child("time_ads").setValue(ServerValue.TIMESTAMP)
+                            }
+
+                        } else {
+                            // Masih cooldown → ubah warna, disable tombol, ganti teks jadi timer
+                            val minutes = remaining / 60
+                            val seconds = remaining % 60
+                            val timeFormatted = String.format("%02d menit : %02d detik", minutes, seconds)
+
+                            btnAds.isEnabled = true
+                            btnAds.setBackgroundTintList(ColorStateList.valueOf(Color.parseColor("#BDBDBD")))
+//                            btnAds.text = "Tunggu $timeFormatted lagi"
+
+                            Toast.makeText(
+                                this@TopUpActivity,
+                                "Tunggu $timeFormatted lagi untuk klik iklan.",
+                                Toast.LENGTH_SHORT
+                            ).show()
+                        }
+                    }
+
+                    override fun onCancelled(error: DatabaseError) {
+                        Log.e("checkAds", "Gagal ambil offset waktu server: ${error.message}")
+                    }
+                })
+        }.addOnFailureListener {
+            Log.e("checkAds", "Gagal ambil time_ads: ${it.message}")
+        }
+    }
+
+
 
     // -- Billing Setup --
     private fun setupBillingClient() {
@@ -211,7 +299,7 @@ class TopUpActivity : AppCompatActivity(), PurchasesUpdatedListener {
             })
     }
 
-    private fun showRewardedAd() {
+    private fun showRewardedAd(onRewardEarned: (() -> Unit)? = null){
         rewardedAd?.let { ad ->
             ad.fullScreenContentCallback = object : FullScreenContentCallback() {
                 override fun onAdDismissedFullScreenContent() {
@@ -228,6 +316,7 @@ class TopUpActivity : AppCompatActivity(), PurchasesUpdatedListener {
             ad.show(this, OnUserEarnedRewardListener {
                 addCoins(3)
                 Toast.makeText(this, "+3 Koin!", Toast.LENGTH_SHORT).show()
+                onRewardEarned?.invoke() // jalankan callback
             })
         } ?: run {
             Toast.makeText(this, "Iklan belum siap. Coba lagi nanti", Toast.LENGTH_SHORT).show()
