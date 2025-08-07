@@ -139,6 +139,7 @@ class MainActivity : AppCompatActivity() {
             sharedPrefs.edit()
                 .putBoolean(IS_LOGGED_IN_KEY, false)
                 .putInt(COINS_KEY, 0)
+                .putBoolean(IS_SUBSCRIBED, false)
                 .apply()
 
             tvCoinAmount.text = "0"
@@ -171,7 +172,7 @@ class MainActivity : AppCompatActivity() {
         if (sharedPrefs.getInt(COINS_KEY, 0) == 0 && !sharedPrefs.getBoolean(IS_LOGGED_IN_KEY, false)) {
             AlertDialog.Builder(this)
                 .setTitle("Login untuk Bonus Koin!")
-                .setMessage("Dapatkan 10 koin gratis + reward harian 5 koin dengan login akun Google!")
+                .setMessage("Dapatkan 7 koin gratis + reward harian 3 koin dengan login akun Google!")
                 .setPositiveButton("Login") { _, _ ->
                     showLoading() // ⬅️ tambahkan ini biar ada animasi loading
                     signInWithGoogle()
@@ -237,7 +238,7 @@ class MainActivity : AppCompatActivity() {
                                     )
                                 )
                                 editor.putInt(COINS_KEY, 10)
-                                Toast.makeText(this, "Data rusak. Direset +10 koin", Toast.LENGTH_SHORT).show()
+                                Toast.makeText(this, "Data rusak. Direset +7 koin", Toast.LENGTH_SHORT).show()
                             } else {
                                 // 🟢 Data valid
                                 editor.putInt(COINS_KEY, coins)
@@ -248,9 +249,9 @@ class MainActivity : AppCompatActivity() {
                             }
                         } else {
                             // 🆕 User baru
-                            val coinbefore = getDataCoin + 10
+                            val coinbefore = getDataCoin + 7
                             editor.putInt(COINS_KEY, coinbefore)
-                            Toast.makeText(this, "Login pertama! +10 Koin", Toast.LENGTH_SHORT).show()
+                            Toast.makeText(this, "Login pertama! +7 Koin", Toast.LENGTH_SHORT).show()
                         }
 
                         editor.apply()
@@ -637,11 +638,11 @@ class MainActivity : AppCompatActivity() {
         val tvMessage = dialogView.findViewById<TextView>(R.id.tvMessage)
 
         tvTitle.text = "Klaim Koin Harian"
-        tvMessage.text = "Dapatkan 5 koin gratis hari ini!"
+        tvMessage.text = "Dapatkan 3 koin gratis hari ini!"
 
         btnClaim.setOnClickListener {
             val currentCoins = sharedPrefs.getInt(COINS_KEY, 0)
-            val newCoins = currentCoins + 5
+            val newCoins = currentCoins + 3
 
             sharedPrefs.edit()
                 .putInt(COINS_KEY, newCoins)
@@ -651,7 +652,7 @@ class MainActivity : AppCompatActivity() {
             Log.d("DailyReward", "Saved last claim date: $currentDate")
             syncCoinsToFirebase()
 
-            Toast.makeText(this, "5 koin ditambahkan!", Toast.LENGTH_SHORT).show()
+            Toast.makeText(this, "3 koin ditambahkan!", Toast.LENGTH_SHORT).show()
             dialog.dismiss()
             tvCoinAmount.text = getCoinsDisplay()
         }
