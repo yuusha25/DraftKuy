@@ -12,7 +12,7 @@ android {
         applicationId = "com.notherix.draftkuy"
         minSdk = 23
         targetSdk = 35
-        versionCode = 1
+        versionCode = 3
         versionName = "1.0"
 
         testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"
@@ -57,6 +57,10 @@ dependencies {
     implementation("com.google.android.gms:play-services-auth:20.7.0")
 
     implementation("com.google.firebase:firebase-database-ktx")  // Add this
+
+    implementation("com.android.billingclient:billing:6.1.0")
+
+
 
 
     testImplementation(libs.junit)

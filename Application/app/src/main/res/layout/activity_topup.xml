@@ -209,12 +209,12 @@
                         android:textStyle="bold" />
 
                     <Button
-                        android:id="@+id/btnTopup10K"
+                        android:id="@+id/btnTopup20K"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
                         android:layout_marginTop="8dp"
                         android:backgroundTint="#FFD700"
-                        android:text="10K"
+                        android:text="20K"
                         android:textColor="#000000" />
                 </LinearLayout>
             </androidx.cardview.widget.CardView>

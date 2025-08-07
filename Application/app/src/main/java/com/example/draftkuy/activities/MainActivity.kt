@@ -185,6 +185,20 @@ class MainActivity : AppCompatActivity() {
         signInLauncher.launch(googleSignInClient.signInIntent)
     }
 
+    private fun validateSubscriptionStatus() {
+        val isSubscribed = sharedPrefs.getBoolean(IS_SUBSCRIBED, false)
+        val expireTime = sharedPrefs.getLong("sub_expire_time", 0L)
+
+        if (isSubscribed && System.currentTimeMillis() > expireTime) {
+            sharedPrefs.edit().putBoolean(IS_SUBSCRIBED, false).apply()
+            val uid = FirebaseAuth.getInstance().currentUser?.uid
+            if (uid != null) {
+                FirebaseDatabase.getInstance("https://draftkuy-3c559-default-rtdb.asia-southeast1.firebasedatabase.app/")
+                    .getReference("users/$uid/is_subscribed")
+                    .setValue(false)
+            }
+        }
+    }
 
     private fun firebaseAuthWithGoogle(idToken: String) {
         showLoading()
@@ -200,7 +214,7 @@ class MainActivity : AppCompatActivity() {
 
                     userRef.get().addOnSuccessListener { snapshot ->
                         val editor = sharedPrefs.edit()
-                        val getDataCoin = sharedPrefs.getInt(COINS_KEY,0)
+                        val getDataCoin = sharedPrefs.getInt(COINS_KEY, 0)
                         editor.putBoolean(IS_LOGGED_IN_KEY, true)
 
                         if (snapshot.exists()) {
@@ -208,13 +222,18 @@ class MainActivity : AppCompatActivity() {
                             val isSubscribed = snapshot.child(IS_SUBSCRIBED).getValue(Boolean::class.java) ?: false
                             val lastClaim = snapshot.child(LAST_CLAIM_DATE_KEY).getValue(String::class.java) ?: ""
 
+                            // ✅ Tambahkan sinkronisasi sub_expire_time
+                            val subExpireTime = snapshot.child("sub_expire_time").getValue(Long::class.java) ?: 0L
+                            editor.putLong("sub_expire_time", subExpireTime)
+
                             Log.d("DailyReward", "Saved last claim date: $lastClaim")
+
                             if (coins == null || coins < 0 || coins > 99999) {
                                 // 🧹 Data rusak → reset
                                 userRef.setValue(
                                     mapOf(
                                         "coins" to 10,
-                                        "last_login" to sharedPrefs.getString(LAST_LOGIN,"")
+                                        "last_login" to sharedPrefs.getString(LAST_LOGIN, "")
                                     )
                                 )
                                 editor.putInt(COINS_KEY, 10)
@@ -222,11 +241,9 @@ class MainActivity : AppCompatActivity() {
                             } else {
                                 // 🟢 Data valid
                                 editor.putInt(COINS_KEY, coins)
-                                editor.putBoolean(IS_SUBSCRIBED,isSubscribed)
-                                editor.putString(LAST_CLAIM_DATE_KEY,lastClaim)
+                                editor.putBoolean(IS_SUBSCRIBED, isSubscribed)
+                                editor.putString(LAST_CLAIM_DATE_KEY, lastClaim)
 
-
-                                Log.d("DailyReward", "Saved last claim date: $lastClaim")
                                 Toast.makeText(this, "Login berhasil. Sisa koin: $coins", Toast.LENGTH_SHORT).show()
                             }
                         } else {
@@ -245,7 +262,6 @@ class MainActivity : AppCompatActivity() {
                         tvCoinAmount.text = getCoinsDisplay()
                         updateLoginText()
                         hideLoading()
-
                     }
                 } else {
                     hideLoading()
@@ -253,6 +269,7 @@ class MainActivity : AppCompatActivity() {
                 }
             }
     }
+
     private var loadingDialog: AlertDialog? = null
 
     private fun showLoading() {
@@ -306,6 +323,7 @@ class MainActivity : AppCompatActivity() {
 
     override fun onResume() {
         super.onResume()
+        validateSubscriptionStatus()
         tvCoinAmount.text = getCoinsDisplay()
         hideLoading()
     }
@@ -345,12 +363,14 @@ class MainActivity : AppCompatActivity() {
         }
 
         findViewById<View>(R.id.btnSearch).setOnClickListener {
-            if (getCoins() == 0 && !sharedPrefs.getBoolean(IS_LOGGED_IN_KEY, false)) {
-                checkCoinsAndPromptLogin() // Prompt login jika koin habis
+            val isSubscribed = sharedPrefs.getBoolean(IS_SUBSCRIBED, false)
+            if (!isSubscribed && getCoins() == 0 && !sharedPrefs.getBoolean(IS_LOGGED_IN_KEY, false)) {
+                checkCoinsAndPromptLogin()
             } else {
                 showSearchDialog()
             }
         }
+
     }
 
     private fun setSelectedRole(newSelected: TextView) {
@@ -568,7 +588,7 @@ class MainActivity : AppCompatActivity() {
 
     private fun syncCoinsToFirebase() {
         val uid = FirebaseAuth.getInstance().currentUser?.uid ?: return
-        val coins = getCoins()
+        val coins = getCoins().coerceAtLeast(0)
 
         val userRef = FirebaseDatabase
             .getInstance("https://draftkuy-3c559-default-rtdb.asia-southeast1.firebasedatabase.app/")
@@ -583,6 +603,20 @@ class MainActivity : AppCompatActivity() {
 
         Log.d("DailyReward", "Saved last claim date: $lastClaim")
 
+    }
+    private fun isUserSubscribed(callback: (Boolean) -> Unit) {
+        val uid = FirebaseAuth.getInstance().currentUser?.uid ?: return callback(false)
+
+        FirebaseDatabase.getInstance()
+            .getReference("users/$uid/subscribed_until")
+            .get()
+            .addOnSuccessListener { snapshot ->
+                val timestamp = snapshot.value as? Long ?: 0L
+                callback(System.currentTimeMillis() < timestamp)
+            }
+            .addOnFailureListener {
+                callback(false)
+            }
     }
 
     private fun showCustomClaimDialog(currentDate: String) {
