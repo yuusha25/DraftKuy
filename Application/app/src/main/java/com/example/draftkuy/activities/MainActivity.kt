@@ -218,51 +218,69 @@ class MainActivity : AppCompatActivity() {
 
                     userRef.get().addOnSuccessListener { snapshot ->
                         val editor = sharedPrefs.edit()
-                        val getDataCoin = sharedPrefs.getInt(COINS_KEY, 0)
+                        val localCoins = sharedPrefs.getInt(COINS_KEY, 0)
                         editor.putBoolean(IS_LOGGED_IN_KEY, true)
 
                         if (snapshot.exists()) {
+                            // 🔄 Ambil data dari Firebase
                             val coins = snapshot.child(COINS_KEY).getValue(Int::class.java)
                             val isSubscribed = snapshot.child(IS_SUBSCRIBED).getValue(Boolean::class.java) ?: false
                             val lastClaim = snapshot.child(LAST_CLAIM_DATE_KEY).getValue(String::class.java) ?: ""
-
-                            // ✅ Tambahkan sinkronisasi sub_expire_time
                             val subExpireTime = snapshot.child("sub_expire_time").getValue(Long::class.java) ?: 0L
-                            editor.putLong("sub_expire_time", subExpireTime)
+                            val subDuration = snapshot.child("sub_duration_days").getValue(Long::class.java) ?: 0L
 
                             Log.d("DailyReward", "Saved last claim date: $lastClaim")
 
                             if (coins == null || coins < 0 || coins > 99999) {
-                                // 🧹 Data rusak → reset
-                                userRef.setValue(
+                                // ⚠️ Data rusak, reset
+                                val resetCoins = 10
+                                userRef.updateChildren(
                                     mapOf(
-                                        "coins" to 10,
-                                        "last_login" to sharedPrefs.getString(LAST_LOGIN, "")
+                                        "coins" to resetCoins,
+                                        "last_login" to System.currentTimeMillis()
                                     )
                                 )
-                                editor.putInt(COINS_KEY, 10)
-                                Toast.makeText(this, "Data rusak. Direset +7 koin", Toast.LENGTH_SHORT).show()
+                                editor.putInt(COINS_KEY, resetCoins)
+                                Toast.makeText(this, "Data rusak. Direset ke 10 koin", Toast.LENGTH_SHORT).show()
                             } else {
-                                // 🟢 Data valid
+                                // ✅ Data valid, simpan ke SharedPreferences
                                 editor.putInt(COINS_KEY, coins)
                                 editor.putBoolean(IS_SUBSCRIBED, isSubscribed)
                                 editor.putString(LAST_CLAIM_DATE_KEY, lastClaim)
+                                editor.putLong("sub_expire_time", subExpireTime)
+                                editor.putLong("sub_duration_days", subDuration)
 
                                 Toast.makeText(this, "Login berhasil. Sisa koin: $coins", Toast.LENGTH_SHORT).show()
                             }
                         } else {
                             // 🆕 User baru
-                            val coinbefore = getDataCoin + 7
-                            editor.putInt(COINS_KEY, coinbefore)
+                            val startingCoins = localCoins + 7
+                            editor.putInt(COINS_KEY, startingCoins)
+                            editor.putBoolean(IS_SUBSCRIBED, false)
+                            editor.putString(LAST_CLAIM_DATE_KEY, "")
+                            editor.putLong("sub_expire_time", 0L)
+                            editor.putLong("sub_duration_days", 0L)
+
+                            // Simpan data baru ke Firebase
+                            userRef.setValue(
+                                mapOf(
+                                    "coins" to startingCoins,
+                                    "is_subscribed" to false,
+                                    "sub_expire_time" to 0L,
+                                    "sub_duration_days" to 0L,
+                                    "last_login" to System.currentTimeMillis()
+                                )
+                            )
+
                             Toast.makeText(this, "Login pertama! +7 Koin", Toast.LENGTH_SHORT).show()
                         }
 
                         editor.apply()
 
-                        // ✅ Simpan/update data user ke Firebase
+                        // 💾 Simpan ulang ke Firebase
                         saveUserDataToFirebase()
 
-                        // 💰 Update UI
+                        // 🔄 Update UI
                         tvCoinAmount.text = getCoinsDisplay()
                         updateLoginText()
                         hideLoading()
@@ -273,6 +291,7 @@ class MainActivity : AppCompatActivity() {
                 }
             }
     }
+
 
     private var loadingDialog: AlertDialog? = null
 

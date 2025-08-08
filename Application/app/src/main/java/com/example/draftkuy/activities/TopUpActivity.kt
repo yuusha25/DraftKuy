@@ -33,7 +33,7 @@ class TopUpActivity : AppCompatActivity(), PurchasesUpdatedListener {
     private val TAG = "TopUpActivity"
 
     private lateinit var billingClient: BillingClient
-    private val skuId = "unlimited_coins_20k"
+    private val skuId = "unlimited_coins_03"
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -86,7 +86,7 @@ class TopUpActivity : AppCompatActivity(), PurchasesUpdatedListener {
         userRef.child("time_ads").get().addOnSuccessListener { snapshot ->
             val lastAdTime = snapshot.getValue(Long::class.java) ?: 0L
 
-            FirebaseDatabase.getInstance()
+            FirebaseDatabase.getInstance("https://draftkuy-3c559-default-rtdb.asia-southeast1.firebasedatabase.app/")
                 .getReference(".info/serverTimeOffset")
                 .addListenerForSingleValueEvent(object : ValueEventListener {
                     override fun onDataChange(offsetSnapshot: DataSnapshot) {
@@ -191,66 +191,86 @@ class TopUpActivity : AppCompatActivity(), PurchasesUpdatedListener {
 
     private fun handlePurchase(purchase: Purchase) {
         if (purchase.purchaseState == Purchase.PurchaseState.PURCHASED) {
-            if (!purchase.isAcknowledged) {
-                val params = AcknowledgePurchaseParams.newBuilder()
+            billingClient.consumeAsync(
+                ConsumeParams.newBuilder()
                     .setPurchaseToken(purchase.purchaseToken)
                     .build()
-
-                billingClient.acknowledgePurchase(params) { billingResult ->
-                    if (billingResult.responseCode == BillingClient.BillingResponseCode.OK) {
-                        processSubscription()
-                    } else {
-                        Toast.makeText(this, "Gagal memverifikasi pembelian", Toast.LENGTH_SHORT).show()
-                    }
+            ) { billingResult, _ ->
+                if (billingResult.responseCode == BillingClient.BillingResponseCode.OK) {
+                    processSubscription()
+                } else {
+                    Toast.makeText(this, "Gagal konsumsi pembelian", Toast.LENGTH_SHORT).show()
                 }
             }
         }
     }
+
 
     private fun processSubscription() {
         val uid = FirebaseAuth.getInstance().currentUser?.uid ?: return
-        val serverTimeRef = FirebaseDatabase.getInstance()
-            .getReference("users/$uid/ServerTime/timestamp")
+        val prefs = getSharedPreferences("user_data", MODE_PRIVATE)
 
-        // Get server time first
-        serverTimeRef.setValue(ServerValue.TIMESTAMP).addOnSuccessListener {
-            serverTimeRef.get().addOnSuccessListener { snapshot ->
-                val serverTime = snapshot.getValue(Long::class.java) ?: System.currentTimeMillis()
+        val userRef = FirebaseDatabase.getInstance("https://draftkuy-3c559-default-rtdb.asia-southeast1.firebasedatabase.app/")
+            .getReference("users/$uid")
 
-                // Calculate expiration (2 months from server time)
-                val calendar = Calendar.getInstance(TimeZone.getTimeZone("Asia/Singapore")).apply {
-                    timeInMillis = serverTime
-                    add(Calendar.MONTH, 2)
-                    set(Calendar.HOUR_OF_DAY, 23)
-                    set(Calendar.MINUTE, 59)
-                    set(Calendar.SECOND, 59)
+        // Ambil offset waktu server
+        FirebaseDatabase.getInstance("https://draftkuy-3c559-default-rtdb.asia-southeast1.firebasedatabase.app/")
+            .getReference(".info/serverTimeOffset")
+            .addListenerForSingleValueEvent(object : ValueEventListener {
+                override fun onDataChange(snapshot: DataSnapshot) {
+                    val offset = snapshot.getValue(Long::class.java) ?: 0L
+                    val serverTime = System.currentTimeMillis() + offset
+
+                    val oldExpireTime = prefs.getLong("sub_expire_time", 0L)
+                    val baseTime = maxOf(serverTime, oldExpireTime)
+
+                    val newExpireCal = Calendar.getInstance().apply {
+                        timeInMillis = baseTime
+                        add(Calendar.MONTH, 1)
+                        set(Calendar.HOUR_OF_DAY, 23)
+                        set(Calendar.MINUTE, 59)
+                        set(Calendar.SECOND, 59)
+                    }
+                    val newExpireTime = newExpireCal.timeInMillis
+
+                    // Hitung durasi tambahan: 30 hari
+                    val addedDays = 30L
+
+                    // Ambil sub_duration_days lama dari Firebase
+                    userRef.child("sub_duration_days").get().addOnSuccessListener { snapshot ->
+                        val currentDuration = snapshot.getValue(Long::class.java) ?: 0L
+                        val newDuration = currentDuration + addedDays
+
+                        // Simpan ke SharedPreferences
+                        prefs.edit()
+                            .putBoolean("is_subscribed", true)
+                            .putLong("sub_expire_time", newExpireTime)
+                            .apply()
+
+                        // Simpan ke Firebase
+                        userRef.child("is_subscribed").setValue(true)
+                        userRef.child("sub_expire_time").setValue(newExpireTime)
+                        userRef.child("sub_duration_days").setValue(newDuration)
+
+                        val expireDate = DateFormat.getDateInstance(DateFormat.LONG).format(Date(newExpireTime))
+                        Toast.makeText(
+                            this@TopUpActivity,
+                            "Berhasil! Unlimited coins aktif hingga $expireDate",
+                            Toast.LENGTH_LONG
+                        ).show()
+
+                        updateCoinUI()
+                    }.addOnFailureListener {
+                        Toast.makeText(this@TopUpActivity, "Gagal ambil durasi lama", Toast.LENGTH_SHORT).show()
+                    }
                 }
-                val expireTime = calendar.timeInMillis
 
-                // Save locally and to Firebase
-                getSharedPreferences("user_data", MODE_PRIVATE).edit()
-                    .putBoolean("is_subscribed", true)
-                    .putLong("sub_expire_time", expireTime)
-                    .apply()
-
-                FirebaseDatabase.getInstance("https://draftkuy-3c559-default-rtdb.asia-southeast1.firebasedatabase.app/")
-                    .getReference("users/$uid/subscribed_until")
-                    .setValue(expireTime)
-
-
-                val expireDate = DateFormat.getDateInstance(DateFormat.LONG).format(Date(expireTime))
-                Toast.makeText(
-                    this,
-                    "Berhasil! Unlimited coins aktif hingga $expireDate",
-                    Toast.LENGTH_LONG
-                ).show()
-
-                updateCoinUI()
-            }
-        }.addOnFailureListener {
-            Toast.makeText(this, "Gagal memverifikasi waktu server", Toast.LENGTH_SHORT).show()
-        }
+                override fun onCancelled(error: DatabaseError) {
+                    Toast.makeText(this@TopUpActivity, "Gagal ambil waktu server", Toast.LENGTH_SHORT).show()
+                }
+            })
     }
+
 
     private fun checkSubscriptionStatus() {
         val uid = FirebaseAuth.getInstance().currentUser?.uid ?: return
@@ -260,14 +280,14 @@ class TopUpActivity : AppCompatActivity(), PurchasesUpdatedListener {
 
         if (isSubscribed) {
             // Verify with server time
-            FirebaseDatabase.getInstance()
+            FirebaseDatabase.getInstance("https://draftkuy-3c559-default-rtdb.asia-southeast1.firebasedatabase.app/")
                 .getReference("users/$uid/ServerTime/timestamp")
                 .get().addOnSuccessListener { snapshot ->
                     val serverTime = snapshot.getValue(Long::class.java) ?: System.currentTimeMillis()
 
                     if (serverTime > expireAt) {
                         prefs.edit().putBoolean("is_subscribed", false).apply()
-                        FirebaseDatabase.getInstance()
+                        FirebaseDatabase.getInstance("https://draftkuy-3c559-default-rtdb.asia-southeast1.firebasedatabase.app/")
                             .getReference("users/$uid/is_subscribed")
                             .setValue(false)
 
@@ -330,12 +350,21 @@ class TopUpActivity : AppCompatActivity(), PurchasesUpdatedListener {
         val isSubscribed = prefs.getBoolean("is_subscribed", false)
         val expireAt = prefs.getLong("sub_expire_time", 0L)
 
-        if (isSubscribed) {
-            val daysLeft = TimeUnit.MILLISECONDS.toDays(expireAt - System.currentTimeMillis())
-            return if (daysLeft > 0) "∞ ($daysLeft hari)" else getCoins().toString()
+        val now = System.currentTimeMillis()
+        val isStillValid = isSubscribed && now < expireAt
+
+        return if (isStillValid) {
+            val daysLeft = TimeUnit.MILLISECONDS.toDays(expireAt - now)
+            "∞ ($daysLeft hari)"
+        } else {
+            // Optional: reset is_subscribed jika kadaluarsa tapi belum diupdate
+            if (isSubscribed) {
+                prefs.edit().putBoolean("is_subscribed", false).apply()
+            }
+            getCoins().toString()
         }
-        return getCoins().toString()
     }
+
 
     private fun getCoins(): Int {
         return getSharedPreferences("user_data", MODE_PRIVATE).getInt("coins", 0)
@@ -347,7 +376,7 @@ class TopUpActivity : AppCompatActivity(), PurchasesUpdatedListener {
         prefs.edit().putInt("coins", newTotal).apply()
 
         FirebaseAuth.getInstance().currentUser?.uid?.let { uid ->
-            FirebaseDatabase.getInstance()
+            FirebaseDatabase.getInstance("https://draftkuy-3c559-default-rtdb.asia-southeast1.firebasedatabase.app/")
                 .getReference("users/$uid/coins")
                 .setValue(newTotal)
         }
