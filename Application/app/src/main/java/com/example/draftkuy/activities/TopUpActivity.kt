@@ -44,7 +44,25 @@ class TopUpActivity : AppCompatActivity(), PurchasesUpdatedListener {
 
         findViewById<Button>(R.id.btnBack).setOnClickListener { finish() }
         findViewById<Button>(R.id.btnAds).setOnClickListener { checkAdsAvailabilityAndShow() }
-        findViewById<Button>(R.id.btnTopup20K).setOnClickListener { launchPurchaseFlow() }
+        findViewById<Button>(R.id.btnTopup20K).setOnClickListener {
+            val user = FirebaseAuth.getInstance().currentUser
+            if (user == null) {
+                // User belum login
+                AlertDialog.Builder(this)
+                    .setTitle("Login Diperlukan")
+                    .setMessage("Silakan login terlebih dahulu untuk melakukan top-up.")
+                    .setPositiveButton("OK") { dialog, _ ->
+                        dialog.dismiss()
+                    }
+                    .show()
+                return@setOnClickListener
+            }
+
+            // Jika sudah login, lanjutkan ke proses top-up
+            launchPurchaseFlow()
+        }
+
+
 
         checkSubscriptionStatus()
         updateCoinUI()
