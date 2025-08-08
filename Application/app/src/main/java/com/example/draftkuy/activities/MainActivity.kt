@@ -276,7 +276,7 @@ class MainActivity : AppCompatActivity() {
                         }
 
                         editor.apply()
-
+                        checkDailyReward()
                         // 💾 Simpan ulang ke Firebase
                         saveUserDataToFirebase()
 
@@ -475,11 +475,12 @@ class MainActivity : AppCompatActivity() {
                         FirebaseDatabase.getInstance("https://draftkuy-3c559-default-rtdb.asia-southeast1.firebasedatabase.app/").getReference("users/$uid/coins")
                             .setValue(currentCoins - 1)
                     }
+
+                    tvCoinAmount.text = getCoins().toString()
 // Tambahkan ini: update ke Firebase juga
 
                 }
 
-                tvCoinAmount.text = getCoins().toString()
                 searchHero(selectedHero)
             }
         }
