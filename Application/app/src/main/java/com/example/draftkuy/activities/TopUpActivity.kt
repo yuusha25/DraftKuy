@@ -255,6 +255,8 @@ class TopUpActivity : AppCompatActivity(), PurchasesUpdatedListener {
                     // Hitung durasi tambahan: 30 hari
                     val addedDays = 30L
 
+                    // Ambil total sub + 1
+                    val totalSub = prefs.getLong("total_sub",0L) + 1L
                     // Ambil sub_duration_days lama dari Firebase
                     userRef.child("sub_duration_days").get().addOnSuccessListener { snapshot ->
                         val currentDuration = snapshot.getValue(Long::class.java) ?: 0L
@@ -264,12 +266,15 @@ class TopUpActivity : AppCompatActivity(), PurchasesUpdatedListener {
                         prefs.edit()
                             .putBoolean("is_subscribed", true)
                             .putLong("sub_expire_time", newExpireTime)
+                            .putLong("total_sub", totalSub)
                             .apply()
 
                         // Simpan ke Firebase
                         userRef.child("is_subscribed").setValue(true)
                         userRef.child("sub_expire_time").setValue(newExpireTime)
                         userRef.child("sub_duration_days").setValue(newDuration)
+                        userRef.child("total_sub").setValue(totalSub)
+
 
                         val expireDate = DateFormat.getDateInstance(DateFormat.LONG).format(Date(newExpireTime))
                         Toast.makeText(
@@ -311,6 +316,13 @@ class TopUpActivity : AppCompatActivity(), PurchasesUpdatedListener {
                             .setValue(false)
 
                         Toast.makeText(this, "Langganan telah berakhir", Toast.LENGTH_SHORT).show()
+                        updateCoinUI()
+                    }
+                    else{
+                        val daysLeft = TimeUnit.MILLISECONDS.toDays(expireAt - serverTime)
+                        FirebaseDatabase.getInstance("https://draftkuy-3c559-default-rtdb.asia-southeast1.firebasedatabase.app/")
+                            .getReference("users/$uid/sub_duration_days")
+                            .setValue(daysLeft)
                         updateCoinUI()
                     }
                 }

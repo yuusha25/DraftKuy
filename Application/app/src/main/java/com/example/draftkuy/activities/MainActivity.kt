@@ -40,6 +40,7 @@ import com.google.firebase.database.FirebaseDatabase
 import com.google.firebase.database.ServerValue
 import java.text.SimpleDateFormat
 import java.util.*
+import java.util.concurrent.TimeUnit
 
 class MainActivity : AppCompatActivity() {
 
@@ -62,6 +63,9 @@ class MainActivity : AppCompatActivity() {
     private val TUTORIAL_SHOWN_KEY = "tutorial_shown"
     private val IS_SUBSCRIBED = "is_subscribed"
     private val TIME_ADS = "time_ads"
+    private val SUB_DURATION_DAYS= "sub_duration_days"
+    private val TOTAL_SUB = "total_sub"
+    private val SUB_EXPIRE_TIME= "sub_expire_time"
 
     // Tambahkan di sini:
     private val signInLauncher = registerForActivityResult(
@@ -205,10 +209,18 @@ class MainActivity : AppCompatActivity() {
                     if (serverTime > expireAt) {
                         prefs.edit().putBoolean("is_subscribed", false).apply()
                         FirebaseDatabase.getInstance("https://draftkuy-3c559-default-rtdb.asia-southeast1.firebasedatabase.app/")
-                            .getReference("users/$uid/is_subscribed")
+                            .getReference("users/$uid/$IS_SUBSCRIBED")
                             .setValue(false)
 
+
                         Toast.makeText(this, "Langganan telah berakhir", Toast.LENGTH_SHORT).show()
+                        getCoinsDisplay()
+                    }
+                    else{
+                        val daysLeft = TimeUnit.MILLISECONDS.toDays(expireAt - serverTime)
+                        FirebaseDatabase.getInstance("https://draftkuy-3c559-default-rtdb.asia-southeast1.firebasedatabase.app/")
+                            .getReference("users/$uid/$SUB_DURATION_DAYS")
+                            .setValue(daysLeft)
                         getCoinsDisplay()
                     }
                 }
@@ -239,6 +251,7 @@ class MainActivity : AppCompatActivity() {
                             val lastClaim = snapshot.child(LAST_CLAIM_DATE_KEY).getValue(String::class.java) ?: ""
                             val subExpireTime = snapshot.child("sub_expire_time").getValue(Long::class.java) ?: 0L
                             val subDuration = snapshot.child("sub_duration_days").getValue(Long::class.java) ?: 0L
+                            val totalSub = snapshot.child("total_Sub").getValue(Long::class.java) ?: 0L
 
                             Log.d("DailyReward", "Saved last claim date: $lastClaim")
 
@@ -259,7 +272,8 @@ class MainActivity : AppCompatActivity() {
                                 editor.putBoolean(IS_SUBSCRIBED, isSubscribed)
                                 editor.putString(LAST_CLAIM_DATE_KEY, lastClaim)
                                 editor.putLong("sub_expire_time", subExpireTime)
-                                editor.putLong("sub_duration_days", subDuration)
+                                editor.putLong(SUB_DURATION_DAYS, subDuration)
+                                editor.putLong(TOTAL_SUB, totalSub)
                                 validateSubscriptionStatus()
                                 Toast.makeText(this, "Login berhasil. Sisa koin: $coins", Toast.LENGTH_SHORT).show()
                             }
@@ -272,6 +286,7 @@ class MainActivity : AppCompatActivity() {
                             editor.putString(LAST_CLAIM_DATE_KEY, "")
                             editor.putLong("sub_expire_time", 0L)
                             editor.putLong("sub_duration_days", 0L)
+                            editor.putLong(TOTAL_SUB, 0L)
 
                             // Simpan data baru ke Firebase
                             userRef.setValue(
@@ -280,6 +295,7 @@ class MainActivity : AppCompatActivity() {
                                     "is_subscribed" to false,
                                     "sub_expire_time" to 0L,
                                     "sub_duration_days" to 0L,
+                                    TOTAL_SUB to 0L,
                                     "last_login" to System.currentTimeMillis()
                                 )
                             )
@@ -364,9 +380,24 @@ class MainActivity : AppCompatActivity() {
     }
 
     private fun getCoinsDisplay(): String {
-        val isSubscribed = sharedPrefs.getBoolean(IS_SUBSCRIBED, false)
+        val prefs = getSharedPreferences("user_data", MODE_PRIVATE)
+        val isSubscribed = prefs.getBoolean("is_subscribed", false)
+        val expireAt = prefs.getLong("sub_expire_time", 0L)
 
-        return if (isSubscribed) "∞" else getCoins().toString()
+        val now = System.currentTimeMillis()
+        val isStillValid = isSubscribed && now < expireAt
+
+        return if (isStillValid) {
+            val daysLeft = TimeUnit.MILLISECONDS.toDays(expireAt - now)
+            "∞ ($daysLeft hari)"
+        } else {
+            // Optional: reset is_subscribed jika kadaluarsa tapi belum diupdate
+            if (isSubscribed) {
+                prefs.edit().putBoolean("is_subscribed", false).apply()
+            }
+            getCoins().toString()
+        }
+
     }
 
     private fun getCoins(): Int {
