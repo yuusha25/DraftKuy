@@ -190,17 +190,28 @@ class MainActivity : AppCompatActivity() {
     }
 
     private fun validateSubscriptionStatus() {
-        val isSubscribed = sharedPrefs.getBoolean(IS_SUBSCRIBED, false)
-        val expireTime = sharedPrefs.getLong("sub_expire_time", 0L)
+        val uid = FirebaseAuth.getInstance().currentUser?.uid ?: return
+        val prefs = getSharedPreferences("user_data", MODE_PRIVATE)
+        val isSubscribed = prefs.getBoolean("is_subscribed", false)
+        val expireAt = prefs.getLong("sub_expire_time", 0L)
 
-        if (isSubscribed && System.currentTimeMillis() > expireTime) {
-            sharedPrefs.edit().putBoolean(IS_SUBSCRIBED, false).apply()
-            val uid = FirebaseAuth.getInstance().currentUser?.uid
-            if (uid != null) {
-                FirebaseDatabase.getInstance("https://draftkuy-3c559-default-rtdb.asia-southeast1.firebasedatabase.app/")
-                    .getReference("users/$uid/is_subscribed")
-                    .setValue(false)
-            }
+        if (isSubscribed) {
+            // Verify with server time
+            FirebaseDatabase.getInstance("https://draftkuy-3c559-default-rtdb.asia-southeast1.firebasedatabase.app/")
+                .getReference("users/$uid/ServerTime/timestamp")
+                .get().addOnSuccessListener { snapshot ->
+                    val serverTime = snapshot.getValue(Long::class.java) ?: System.currentTimeMillis()
+
+                    if (serverTime > expireAt) {
+                        prefs.edit().putBoolean("is_subscribed", false).apply()
+                        FirebaseDatabase.getInstance("https://draftkuy-3c559-default-rtdb.asia-southeast1.firebasedatabase.app/")
+                            .getReference("users/$uid/is_subscribed")
+                            .setValue(false)
+
+                        Toast.makeText(this, "Langganan telah berakhir", Toast.LENGTH_SHORT).show()
+                        getCoinsDisplay()
+                    }
+                }
         }
     }
 
@@ -249,9 +260,10 @@ class MainActivity : AppCompatActivity() {
                                 editor.putString(LAST_CLAIM_DATE_KEY, lastClaim)
                                 editor.putLong("sub_expire_time", subExpireTime)
                                 editor.putLong("sub_duration_days", subDuration)
-
+                                validateSubscriptionStatus()
                                 Toast.makeText(this, "Login berhasil. Sisa koin: $coins", Toast.LENGTH_SHORT).show()
                             }
+
                         } else {
                             // 🆕 User baru
                             val startingCoins = localCoins + 7
@@ -462,7 +474,7 @@ class MainActivity : AppCompatActivity() {
             if (selectedHero != null) {
                 val isSubscribed = sharedPrefs.getBoolean(IS_SUBSCRIBED,false)
                 val currentCoins = getCoins()
-
+                validateSubscriptionStatus()
                 if (currentCoins == 0 && !isSubscribed) {
                     Toast.makeText(this, "Anda tidak memiliki koin.", Toast.LENGTH_SHORT).show()
                     return@setOnItemClickListener // hentikan eksekusi lebih lanjut

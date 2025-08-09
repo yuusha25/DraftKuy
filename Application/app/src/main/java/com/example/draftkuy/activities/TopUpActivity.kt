@@ -33,7 +33,7 @@ class TopUpActivity : AppCompatActivity(), PurchasesUpdatedListener {
     private val TAG = "TopUpActivity"
 
     private lateinit var billingClient: BillingClient
-    private val skuId = "unlimited_coins_03"
+    private val skuId = "unlimited_coins_dky1"
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -216,6 +216,7 @@ class TopUpActivity : AppCompatActivity(), PurchasesUpdatedListener {
             ) { billingResult, _ ->
                 if (billingResult.responseCode == BillingClient.BillingResponseCode.OK) {
                     processSubscription()
+                    Toast.makeText(this, "Pembelian Anda berhasil", Toast.LENGTH_SHORT).show()
                 } else {
                     Toast.makeText(this, "Gagal konsumsi pembelian", Toast.LENGTH_SHORT).show()
                 }
