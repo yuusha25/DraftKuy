@@ -4,6 +4,7 @@ import android.app.Dialog
 import android.content.Intent
 import android.content.SharedPreferences
 import android.graphics.Paint
+import android.net.Uri
 import android.os.Bundle
 import android.util.Log
 import android.view.LayoutInflater
@@ -741,7 +742,7 @@ class MainActivity : AppCompatActivity() {
         val appPrefs = getSharedPreferences("app_prefs", MODE_PRIVATE)
         if (!appPrefs.getBoolean(TUTORIAL_SHOWN_KEY, false)) {
             sharedPrefs.edit().apply {
-                putInt(COINS_KEY, 1) // Changed from 7 to 3 coins
+                putInt(COINS_KEY, 1) // Changed from 7 to 1 coins
                 apply()
             }
             tvCoinAmount.text = getCoinsDisplay()
@@ -755,8 +756,8 @@ class MainActivity : AppCompatActivity() {
                     ).apply {
                         outerCircleColor(R.color.orange)
                         targetCircleColor(R.color.transparent)
-                        titleTextSize(18)
-                        descriptionTextSize(14)
+                        titleTextSize(20)
+                        descriptionTextSize(16)
                         textColor(R.color.white)
                         dimColor(R.color.black)
                         drawShadow(true)
@@ -771,8 +772,8 @@ class MainActivity : AppCompatActivity() {
                     ).apply {
                         outerCircleColor(R.color.blue)
                         targetCircleColor(R.color.transparent)
-                        titleTextSize(18)
-                        descriptionTextSize(14)
+                        titleTextSize(20)
+                        descriptionTextSize(16)
                         textColor(R.color.white)
                         dimColor(R.color.black)
                         drawShadow(true)
@@ -786,8 +787,8 @@ class MainActivity : AppCompatActivity() {
                     ).apply {
                         outerCircleColor(R.color.purple_500)
                         targetCircleColor(R.color.transparent)
-                        titleTextSize(18)
-                        descriptionTextSize(14)
+                        titleTextSize(20)
+                        descriptionTextSize(16)
                         textColor(R.color.white)
                         dimColor(R.color.black)
                         drawShadow(true)
@@ -801,8 +802,8 @@ class MainActivity : AppCompatActivity() {
                     ).apply {
                         outerCircleColor(R.color.teal_700)
                         targetCircleColor(R.color.transparent)
-                        titleTextSize(18)
-                        descriptionTextSize(14)
+                        titleTextSize(20)
+                        descriptionTextSize(16)
                         textColor(R.color.white)
                         dimColor(R.color.black)
                         drawShadow(true)
@@ -812,7 +813,28 @@ class MainActivity : AppCompatActivity() {
                 ).listener(object : TapTargetSequence.Listener {
                     override fun onSequenceFinish() {
                         appPrefs.edit().putBoolean(TUTORIAL_SHOWN_KEY, true).apply()
+
+                        val container = findViewById<FrameLayout>(R.id.tutorialContainer)
+                        val videoView = findViewById<VideoView>(R.id.videoView)
+                        val closeBtn = findViewById<Button>(R.id.btnCloseVideo)
+
+                        container.visibility = View.VISIBLE
+
+                        val videoUri = Uri.parse("android.resource://${packageName}/${R.raw.tutorial_video}")
+                        videoView.setVideoURI(videoUri)
+
+                        videoView.setOnPreparedListener { mp ->
+                            mp.isLooping = false
+                            videoView.start()
+                        }
+
+                        closeBtn.setOnClickListener {
+                            videoView.stopPlayback()
+                            container.visibility = View.GONE
+                        }
                     }
+
+
                     override fun onSequenceStep(lastTarget: TapTarget?, targetClicked: Boolean) {}
                     override fun onSequenceCanceled(lastTarget: TapTarget?) {}
                 }).start()
