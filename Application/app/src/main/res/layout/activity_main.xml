@@ -362,7 +362,7 @@
                 android:textColor="#FF0000"
                 android:textStyle="bold"
                 android:gravity="center"
-                android:textSize="14sp"
+                android:textSize="20sp"
                 android:lineSpacingExtra="2dp" />
 
             <Button

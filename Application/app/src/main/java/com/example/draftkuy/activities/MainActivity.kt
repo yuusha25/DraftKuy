@@ -4,6 +4,7 @@ import android.app.Dialog
 import android.content.Intent
 import android.content.SharedPreferences
 import android.graphics.Paint
+import android.graphics.Typeface
 import android.net.Uri
 import android.os.Bundle
 import android.util.Log
@@ -756,8 +757,9 @@ class MainActivity : AppCompatActivity() {
                     ).apply {
                         outerCircleColor(R.color.orange)
                         targetCircleColor(R.color.transparent)
-                        titleTextSize(20)
-                        descriptionTextSize(16)
+                        titleTextSize(28)
+                        descriptionTextSize(24)
+                        descriptionTypeface(Typeface.DEFAULT_BOLD)
                         textColor(R.color.white)
                         dimColor(R.color.black)
                         drawShadow(true)
@@ -772,9 +774,10 @@ class MainActivity : AppCompatActivity() {
                     ).apply {
                         outerCircleColor(R.color.blue)
                         targetCircleColor(R.color.transparent)
-                        titleTextSize(20)
-                        descriptionTextSize(16)
+                        titleTextSize(28)
+                        descriptionTextSize(24)
                         textColor(R.color.white)
+                        descriptionTypeface(Typeface.DEFAULT_BOLD)
                         dimColor(R.color.black)
                         drawShadow(true)
                         cancelable(false)
@@ -787,8 +790,9 @@ class MainActivity : AppCompatActivity() {
                     ).apply {
                         outerCircleColor(R.color.purple_500)
                         targetCircleColor(R.color.transparent)
-                        titleTextSize(20)
-                        descriptionTextSize(16)
+                        titleTextSize(28)
+                        descriptionTextSize(24)
+                        descriptionTypeface(Typeface.DEFAULT_BOLD)
                         textColor(R.color.white)
                         dimColor(R.color.black)
                         drawShadow(true)
@@ -802,8 +806,9 @@ class MainActivity : AppCompatActivity() {
                     ).apply {
                         outerCircleColor(R.color.teal_700)
                         targetCircleColor(R.color.transparent)
-                        titleTextSize(20)
-                        descriptionTextSize(16)
+                        titleTextSize(28)
+                        descriptionTextSize(24)
+                        descriptionTypeface(Typeface.DEFAULT_BOLD)
                         textColor(R.color.white)
                         dimColor(R.color.black)
                         drawShadow(true)
