@@ -154,7 +154,12 @@ class TopUpActivity : AppCompatActivity(), PurchasesUpdatedListener {
     // -- Billing Setup --
     private fun setupBillingClient() {
         billingClient = BillingClient.newBuilder(this)
-            .enablePendingPurchases()
+            .enablePendingPurchases(
+                PendingPurchasesParams.newBuilder()
+                    .enableOneTimeProducts() // untuk pembelian sekali bayar (INAPP)
+                    .build()
+            )
+
             .setListener(this)
             .build()
 
@@ -172,19 +177,43 @@ class TopUpActivity : AppCompatActivity(), PurchasesUpdatedListener {
     }
 
     private fun launchPurchaseFlow() {
-        val params = SkuDetailsParams.newBuilder()
-        params.setSkusList(listOf(skuId)).setType(BillingClient.SkuType.INAPP)
+        val productList = listOf(
+            QueryProductDetailsParams.Product.newBuilder()
+                .setProductId(skuId) // ID produk sesuai Play Console
+                .setProductType(BillingClient.ProductType.INAPP) // atau SUBS
+                .build()
+        )
 
-        billingClient.querySkuDetailsAsync(params.build()) { billingResult, skuDetailsList ->
-            if (billingResult.responseCode == BillingClient.BillingResponseCode.OK && skuDetailsList != null) {
-                val skuDetails = skuDetailsList.firstOrNull() ?: return@querySkuDetailsAsync
-                val flowParams = BillingFlowParams.newBuilder()
-                    .setSkuDetails(skuDetails)
-                    .build()
-                billingClient.launchBillingFlow(this, flowParams)
+        val params = QueryProductDetailsParams.newBuilder()
+            .setProductList(productList)
+            .build()
+
+        billingClient.queryProductDetailsAsync(params) { billingResult: BillingResult, productDetailsResult: QueryProductDetailsResult ->
+            if (billingResult.responseCode == BillingClient.BillingResponseCode.OK) {
+                val productDetailsList = productDetailsResult.productDetailsList
+                if (!productDetailsList.isNullOrEmpty()) {
+                    val productDetails = productDetailsList[0] // atau .first()
+
+                    val flowParams = BillingFlowParams.newBuilder()
+                        .setProductDetailsParamsList(
+                            listOf(
+                                BillingFlowParams.ProductDetailsParams.newBuilder()
+                                    .setProductDetails(productDetails)
+                                    .build()
+                            )
+                        )
+                        .build()
+
+                    billingClient.launchBillingFlow(this, flowParams)
+                } else {
+                    Log.e(TAG, "No product details found for $skuId")
+                }
+            } else {
+                Log.e(TAG, "Failed to query product details: ${billingResult.debugMessage}")
             }
         }
     }
+
 
     override fun onPurchasesUpdated(billingResult: BillingResult, purchases: MutableList<Purchase>?) {
         when (billingResult.responseCode) {

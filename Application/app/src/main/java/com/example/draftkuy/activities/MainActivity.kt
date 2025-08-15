@@ -122,7 +122,7 @@ class MainActivity : AppCompatActivity() {
         roleBar = findViewById(R.id.roleBar)
         tvCoinAmount = findViewById(R.id.txtCoin)
         ivHero = findViewById(R.id.ivHero)
-
+        checkDailyReward()
         tvCoinAmount.text = getCoinsDisplay()
 
     }
@@ -824,6 +824,8 @@ class MainActivity : AppCompatActivity() {
                         val closeBtn = findViewById<Button>(R.id.btnCloseVideo)
 
                         container.visibility = View.VISIBLE
+                        closeBtn.visibility = View.GONE
+
 
                         val videoUri = Uri.parse("android.resource://${packageName}/${R.raw.tutorial_video}")
                         videoView.setVideoURI(videoUri)
@@ -831,6 +833,9 @@ class MainActivity : AppCompatActivity() {
                         videoView.setOnPreparedListener { mp ->
                             mp.isLooping = false
                             videoView.start()
+                        }
+                        videoView.setOnCompletionListener {
+                            closeBtn.visibility = View.VISIBLE
                         }
 
                         closeBtn.setOnClickListener {

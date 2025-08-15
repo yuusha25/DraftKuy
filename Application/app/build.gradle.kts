@@ -12,7 +12,7 @@ android {
         applicationId = "com.notherix.draftkuy"
         minSdk = 23
         targetSdk = 35
-        versionCode = 50
+        versionCode = 58
         versionName = "1.0"
 
         testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"
@@ -39,15 +39,14 @@ android {
 }
 
 dependencies {
-    implementation("androidx.activity:activity-ktx:1.6.1")
+    implementation("androidx.activity:activity-ktx:1.10.1")
     implementation(libs.androidx.core.ktx)
-    implementation("com.google.code.gson:gson:2.10.1")
-    implementation("com.google.android.material:material:1.9.0")
-    implementation("androidx.appcompat:appcompat:1.6.1")
+    implementation("com.google.code.gson:gson:2.13.1")
+    implementation(libs.material)
+    implementation(libs.androidx.appcompat)
     implementation("androidx.cardview:cardview:1.0.0")
     implementation("com.google.android.gms:play-services-ads:24.5.0")
-    implementation("androidx.core:core-ktx:1.12.0")
-    implementation("com.getkeepsafe.taptargetview:taptargetview:1.13.3")
+    implementation("com.getkeepsafe.taptargetview:taptargetview:1.15.0")
     implementation("com.google.firebase:firebase-database:22.0.0")
 
     // Firebase BoM dan library
@@ -58,7 +57,7 @@ dependencies {
 
     implementation("com.google.firebase:firebase-database-ktx")  // Add this
 
-    implementation("com.android.billingclient:billing:6.1.0")
+    implementation("com.android.billingclient:billing:8.0.0")
 
 
 
