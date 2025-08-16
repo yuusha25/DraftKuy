@@ -122,10 +122,35 @@ class MainActivity : AppCompatActivity() {
         roleBar = findViewById(R.id.roleBar)
         tvCoinAmount = findViewById(R.id.txtCoin)
         ivHero = findViewById(R.id.ivHero)
-        checkDailyReward()
         tvCoinAmount.text = getCoinsDisplay()
+        checkUser()
 
     }
+
+    private fun checkUser(){
+        val user = FirebaseAuth.getInstance().currentUser
+        if (user != null) {
+            // Misal ambil data dari Realtime Database
+            val uid = user.uid
+            val databaseRef = FirebaseDatabase.getInstance().getReference("users").child(uid)
+
+            databaseRef.get().addOnSuccessListener { snapshot ->
+                val lastClaim = snapshot.child(LAST_CLAIM_DATE_KEY).getValue(String::class.java) ?: ""
+
+                // simpan ke SharedPreferences
+                val editor = sharedPrefs.edit()
+                editor.putString(LAST_CLAIM_DATE_KEY, lastClaim)
+                editor.apply()
+
+                // cek daily reward
+                checkDailyReward()
+            }.addOnFailureListener {
+                // handle error
+                Log.e("MainActivity", "Gagal ambil data lastClaim", it)
+            }
+        }
+    }
+
 
 
 
@@ -306,7 +331,6 @@ class MainActivity : AppCompatActivity() {
                         }
 
                         editor.apply()
-                        checkDailyReward()
                         // 💾 Simpan ulang ke Firebase
                         saveUserDataToFirebase()
 
@@ -849,8 +873,6 @@ class MainActivity : AppCompatActivity() {
                     override fun onSequenceCanceled(lastTarget: TapTarget?) {}
                 }).start()
             }
-        } else {
-            checkDailyReward()
         }
     }
 

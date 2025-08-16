@@ -12,7 +12,7 @@ android {
         applicationId = "com.notherix.draftkuy"
         minSdk = 23
         targetSdk = 35
-        versionCode = 58
+        versionCode = 60
         versionName = "1.0"
 
         testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"
