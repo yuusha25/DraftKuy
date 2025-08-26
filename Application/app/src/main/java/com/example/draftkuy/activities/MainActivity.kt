@@ -3,8 +3,10 @@ package com.notherix.draftkuy.activities
 import android.app.Dialog
 import android.content.Intent
 import android.content.SharedPreferences
+import android.graphics.Bitmap
 import android.graphics.Paint
 import android.graphics.Typeface
+import android.graphics.drawable.BitmapDrawable
 import android.net.Uri
 import android.os.Bundle
 import android.util.Log
@@ -33,6 +35,7 @@ import com.google.android.gms.auth.api.signin.GoogleSignInStatusCodes
 
 import android.os.Handler
 import android.os.Looper
+import android.util.TypedValue
 
 
 import com.google.firebase.FirebaseApp
@@ -123,6 +126,9 @@ class MainActivity : AppCompatActivity() {
         tvCoinAmount = findViewById(R.id.txtCoin)
         ivHero = findViewById(R.id.ivHero)
         tvCoinAmount.text = getCoinsDisplay()
+
+        ivHero.setImageResource(R.drawable.herodis)
+
         checkUser()
 
     }
@@ -771,6 +777,8 @@ class MainActivity : AppCompatActivity() {
                 apply()
             }
             tvCoinAmount.text = getCoinsDisplay()
+
+
 
             findViewById<View>(R.id.ivCoin).post {
                 TapTargetSequence(this).targets(
