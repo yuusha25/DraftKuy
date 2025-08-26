@@ -364,7 +364,7 @@ class TopUpActivity : AppCompatActivity(), PurchasesUpdatedListener {
         isLoading = true
 
         val adRequest = AdRequest.Builder().build()
-        RewardedAd.load(this, "ca-app-pub-3940256099942544/5224354917", adRequest,
+        RewardedAd.load(this, "ca-app-pub-5043561881449105/1289864429", adRequest,
             object : RewardedAdLoadCallback() {
                 override fun onAdLoaded(ad: RewardedAd) {
                     rewardedAd = ad
