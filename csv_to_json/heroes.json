@@ -1,0 +1,338 @@
+{
+  "Tigreal": {
+    "Roam": [
+      {
+        "counter": "Floryn",
+        "explain": "lorem ipsum dolor"
+      },
+      {
+        "counter": "Diggie",
+        "explain": "lorem ipsum dolor"
+      },
+      {
+        "counter": "Hylos",
+        "explain": "lorem ipsum dolor"
+      },
+      {
+        "counter": "Minotaur",
+        "explain": "lorem ipsum dolor"
+      },
+      {
+        "counter": "Khaleed",
+        "explain": "lorem ipsum dolor"
+      }
+    ],
+    "xplane": [
+      {
+        "counter": "Gloo",
+        "explain": "lorem ipsum dolor"
+      },
+      {
+        "counter": "Cici",
+        "explain": "lorem ipsum dolor"
+      },
+      {
+        "counter": "Gatotkaca",
+        "explain": "lorem ipsum dolor"
+      },
+      {
+        "counter": "Phoveus",
+        "explain": "lorem ipsum dolor"
+      },
+      {
+        "counter": "Badang",
+        "explain": "lorem ipsum dolor"
+      }
+    ],
+    "goldlane": [
+      {
+        "counter": "Wanwan",
+        "explain": "lorem ipsum dolor"
+      },
+      {
+        "counter": "Moskov",
+        "explain": "lorem ipsum dolor"
+      },
+      {
+        "counter": "Natan",
+        "explain": "lorem ipsum dolor"
+      },
+      {
+        "counter": "Irithel",
+        "explain": "lorem ipsum dolor"
+      },
+      {
+        "counter": "Claude",
+        "explain": "lorem ipsum dolor"
+      }
+    ],
+    "jungler": [
+      {
+        "counter": "Lancelot",
+        "explain": "lorem ipsum dolor"
+      },
+      {
+        "counter": "Yi Sun-shin",
+        "explain": "lorem ipsum dolor"
+      },
+      {
+        "counter": "Akai",
+        "explain": "lorem ipsum dolor"
+      },
+      {
+        "counter": "Lapu-Lapu",
+        "explain": "lorem ipsum dolor"
+      },
+      {
+        "counter": "Martis",
+        "explain": "lorem ipsum dolor"
+      }
+    ],
+    "midlane": [
+      {
+        "counter": "Vexana",
+        "explain": "lorem ipsum dolor"
+      },
+      {
+        "counter": "Aurora",
+        "explain": "lorem ipsum dolor"
+      },
+      {
+        "counter": "Valir",
+        "explain": "lorem ipsum dolor"
+      },
+      {
+        "counter": "Zhuxin",
+        "explain": "lorem ipsum dolor"
+      },
+      {
+        "counter": "Faramis",
+        "explain": "lorem ipsum dolor"
+      }
+    ]
+  },
+  "pharsa": {
+    "Roam": [
+      {
+        "counter": "Floryn",
+        "explain": "lorem ipsum dolor"
+      },
+      {
+        "counter": "Diggie",
+        "explain": "lorem ipsum dolor"
+      },
+      {
+        "counter": "Hylos",
+        "explain": "lorem ipsum dolor"
+      },
+      {
+        "counter": "Minotaur",
+        "explain": "lorem ipsum dolor"
+      },
+      {
+        "counter": "Khaleed",
+        "explain": "lorem ipsum dolor"
+      }
+    ],
+    "xplane": [
+      {
+        "counter": "Gloo",
+        "explain": "lorem ipsum dolor"
+      },
+      {
+        "counter": "Cici",
+        "explain": "lorem ipsum dolor"
+      },
+      {
+        "counter": "Gatotkaca",
+        "explain": "lorem ipsum dolor"
+      },
+      {
+        "counter": "Phoveus",
+        "explain": "lorem ipsum dolor"
+      },
+      {
+        "counter": "Badang",
+        "explain": "lorem ipsum dolor"
+      }
+    ],
+    "goldlane": [
+      {
+        "counter": "Wanwan",
+        "explain": "lorem ipsum dolor"
+      },
+      {
+        "counter": "Moskov",
+        "explain": "lorem ipsum dolor"
+      },
+      {
+        "counter": "Natan",
+        "explain": "lorem ipsum dolor"
+      },
+      {
+        "counter": "Irithel",
+        "explain": "lorem ipsum dolor"
+      },
+      {
+        "counter": "Claude",
+        "explain": "lorem ipsum dolor"
+      }
+    ],
+    "jungler": [
+      {
+        "counter": "Lancelot",
+        "explain": "lorem ipsum dolor"
+      },
+      {
+        "counter": "Yi Sun-shin",
+        "explain": "lorem ipsum dolor"
+      },
+      {
+        "counter": "Akai",
+        "explain": "lorem ipsum dolor"
+      },
+      {
+        "counter": "Lapu-Lapu",
+        "explain": "lorem ipsum dolor"
+      },
+      {
+        "counter": "Martis",
+        "explain": "lorem ipsum dolor"
+      }
+    ],
+    "midlane": [
+      {
+        "counter": "Vexana",
+        "explain": "lorem ipsum dolor"
+      },
+      {
+        "counter": "Aurora",
+        "explain": "lorem ipsum dolor"
+      },
+      {
+        "counter": "Valir",
+        "explain": "lorem ipsum dolor"
+      },
+      {
+        "counter": "Zhuxin",
+        "explain": "lorem ipsum dolor"
+      },
+      {
+        "counter": "Faramis",
+        "explain": "lorem ipsum dolor"
+      }
+    ]
+  },
+  "nana": {
+    "Roam": [
+      {
+        "counter": "Floryn",
+        "explain": "lorem ipsum dolor"
+      },
+      {
+        "counter": "Diggie",
+        "explain": "lorem ipsum dolor"
+      },
+      {
+        "counter": "Hylos",
+        "explain": "lorem ipsum dolor"
+      },
+      {
+        "counter": "Minotaur",
+        "explain": "lorem ipsum dolor"
+      },
+      {
+        "counter": "Khaleed",
+        "explain": "lorem ipsum dolor"
+      }
+    ],
+    "xplane": [
+      {
+        "counter": "Gloo",
+        "explain": "lorem ipsum dolor"
+      },
+      {
+        "counter": "Cici",
+        "explain": "lorem ipsum dolor"
+      },
+      {
+        "counter": "Gatotkaca",
+        "explain": "lorem ipsum dolor"
+      },
+      {
+        "counter": "Phoveus",
+        "explain": "lorem ipsum dolor"
+      },
+      {
+        "counter": "Badang",
+        "explain": "lorem ipsum dolor"
+      }
+    ],
+    "goldlane": [
+      {
+        "counter": "Wanwan",
+        "explain": "lorem ipsum dolor"
+      },
+      {
+        "counter": "Moskov",
+        "explain": "lorem ipsum dolor"
+      },
+      {
+        "counter": "Natan",
+        "explain": "lorem ipsum dolor"
+      },
+      {
+        "counter": "Irithel",
+        "explain": "lorem ipsum dolor"
+      },
+      {
+        "counter": "Claude",
+        "explain": "lorem ipsum dolor"
+      }
+    ],
+    "jungler": [
+      {
+        "counter": "Lancelot",
+        "explain": "lorem ipsum dolor"
+      },
+      {
+        "counter": "Yi Sun-shin",
+        "explain": "lorem ipsum dolor"
+      },
+      {
+        "counter": "Akai",
+        "explain": "lorem ipsum dolor"
+      },
+      {
+        "counter": "Lapu-Lapu",
+        "explain": "lorem ipsum dolor"
+      },
+      {
+        "counter": "Martis",
+        "explain": "lorem ipsum dolor"
+      }
+    ],
+    "midlane": [
+      {
+        "counter": "Vexana",
+        "explain": "lorem ipsum dolor"
+      },
+      {
+        "counter": "Aurora",
+        "explain": "lorem ipsum dolor"
+      },
+      {
+        "counter": "Valir",
+        "explain": "lorem ipsum dolor"
+      },
+      {
+        "counter": "Zhuxin",
+        "explain": "lorem ipsum dolor"
+      },
+      {
+        "counter": "Faramis",
+        "explain": "lorem ipsum dolor"
+      }
+    ]
+  }
+}
